@@ -1,65 +1,114 @@
 import Image from "next/image";
+import HeroPhotos from "./HeroPhotos";
+import HeroText from "./HeroText";
+import MobileNav from "./MobileNav";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <>
+      <section className="relative flex flex-col overflow-hidden sm:min-h-screen">
+        {/* doodle icons */}
         <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+          src="/HeroSectionImages/itemsvg2.svg"
+          alt=""
+          width={296}
+          height={175}
+          className="pointer-events-none absolute left-[21%] -top-4 z-0 w-20 opacity-70 sm:w-56"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+        <Image
+          src="/HeroSectionImages/itemsvg1.svg"
+          alt=""
+          width={115}
+          height={129}
+          className="pointer-events-none absolute right-[10%] top-[265px] z-0 w-12 rotate-25 opacity-70 sm:right-[1%] sm:top-[9%] sm:rotate-0 sm:w-36"
+        />
+
+        {/* floating photo cards */}
+        <HeroPhotos />
+
+        <header className="relative z-10 flex items-center justify-between border-b border-white/10 bg-background px-6 py-[17px] sm:border-b-0 sm:bg-transparent sm:px-12 sm:py-6">
+          <Image
+            src="/logo-light.png"
+            alt="Education Group Of Sunray Myanmar"
+            width={329}
+            height={143}
+            className="h-10 w-auto sm:h-14"
+            priority
+          />
+          <nav className="hidden items-center gap-10 text-base font-medium text-foreground/90 md:flex">
+            <a href="#" className="hover:text-primary-light transition-colors">
+              Home
+            </a>
+            <a href="#" className="hover:text-primary-light transition-colors">
+              About
+            </a>
+            <a href="#" className="hover:text-primary-light transition-colors">
+              Programs
+            </a>
+            <a href="#" className="hover:text-primary-light transition-colors">
+              Teachers
+            </a>
+          </nav>
+          <a
+            href="mailto:info@sunray-edu.com"
+            className="hidden text-base font-medium text-primary-light md:block"
+          >
+            info@sunray-edu.com
+          </a>
+          <MobileNav />
+        </header>
+
+        <main className="relative z-10 flex flex-1 flex-col items-center justify-start px-6 pt-19.5 pb-24 text-center sm:justify-center sm:pt-0">
+          <HeroText />
+        </main>
+      </section>
+
+      <section className="relative -mt-[26px] h-60 w-full overflow-hidden sm:-mt-7.5 sm:h-175">
+        <Image
+          src="/HeroSectionImages/heroMain.png"
+          alt=""
+          fill
+          className="object-contain object-bottom"
+        />
+      </section>
+
+      <section className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-6 px-4 py-12 sm:gap-12 sm:px-12 sm:py-24 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <p className="text-sm font-semibold tracking-wide text-primary-light">
+            ABOUT OUR INSTITUTE
+          </p>
+          <h2 className="mt-4 font-serif text-3xl leading-tight text-foreground sm:text-6xl">
+            Welcome to{" "}
+            <span className="text-primary-light">Sunray</span> Myanmar
+          </h2>
+          <p className="mt-6 max-w-xl text-base leading-relaxed text-muted">
+            Our school &amp; college is dedicated to academic excellence,
+            character development, and leadership growth. With experienced
+            teachers and modern facilities, we ensure every learner reaches
+            their full potential.
+          </p>
+
+          <hr className="mt-16 border-t border-primary-light/40" />
+
+          <blockquote className="mt-8 max-w-xl text-base italic leading-relaxed text-foreground/90">
+            &ldquo;We believe education is not just about books &mdash;
+            it&apos;s about building confident, responsible, and capable
+            individuals.&rdquo;
+          </blockquote>
+          <p className="mt-4 text-sm tracking-wide text-muted">
+            ALMOND D. DOWSON, PROFESSOR
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="relative h-80 w-full overflow-hidden rounded-3xl sm:h-120">
+          <Image
+            src="/HeroSectionImages/welcome.avif"
+            alt="Sunray Myanmar campus"
+            fill
+            className="object-cover"
+          />
         </div>
-      </main>
-    </div>
+      </section>
+    </>
   );
 }
