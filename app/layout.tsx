@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono, Lora, Montserrat } from "next/font/google";
 import SmoothScroll from "./SmoothScroll";
 import Footer from "./Footer";
+import CustomCursor from "./CustomCursor";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -27,6 +28,25 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: "Sunray Myanmar | Education Group",
   description: "Shaping bright futures through quality education",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: "/apple-touch-icon.png",
+  },
+  openGraph: {
+    title: "Sunray Myanmar | Education Group",
+    description: "Shaping bright futures through quality education",
+    images: ["/social_sharing.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Sunray Myanmar | Education Group",
+    description: "Shaping bright futures through quality education",
+    images: ["/social_sharing.png"],
+  },
 };
 
 export default function RootLayout({
@@ -41,6 +61,7 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <SmoothScroll />
+        <CustomCursor />
         {children}
         <Footer />
       </body>

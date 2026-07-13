@@ -1,12 +1,19 @@
 "use client";
 
 import { useState } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 
-const links = ["Home", "About", "Programs", "Teachers"];
+const links = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "#" },
+  { label: "Programs", href: "/programs" },
+  { label: "Teachers", href: "/teachers" },
+];
 
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
   return (
     <div className="md:hidden">
@@ -39,12 +46,14 @@ export default function MobileNav() {
             <nav className="flex flex-col gap-5 text-base font-medium text-foreground/90">
               {links.map((link) => (
                 <a
-                  key={link}
-                  href="#"
+                  key={link.label}
+                  href={link.href}
                   onClick={() => setOpen(false)}
-                  className="hover:text-primary-light transition-colors"
+                  className={`transition-colors hover:text-primary-light ${
+                    pathname === link.href ? "text-primary-light" : ""
+                  }`}
                 >
-                  {link}
+                  {link.label}
                 </a>
               ))}
               <a
