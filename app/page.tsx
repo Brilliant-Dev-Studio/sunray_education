@@ -1,5 +1,4 @@
 import Image from "next/image";
-import TestimonialCard from "./TestimonialCard";
 import FAQ from "./FAQ";
 import CampusOverview from "./CampusOverview";
 import RotatingBadge from "./RotatingBadge";
@@ -10,18 +9,9 @@ import HeroSlideshow from "./HeroSlideshow";
 import StatsSection from "./StatsSection";
 
 const testimonials = [
-  {
-    name: "Daw Aye Aye Mon, Parent",
-    quote:
-      "This institution has helped my child grow in confidence and academic performance.",
-    photo: "/HeroSectionImages/8AxkYNsPmpX3TkZm21mGtYsXtyE.avif",
-  },
-  {
-    name: "U Zaw Min Htet, Parent",
-    quote:
-      "My child has developed strong confidence and achieved better academic results here.",
-    photo: "/HeroSectionImages/uYxYmYvQtsp0fRbUzj5NYfVrL8.avif",
-  },
+  { name: "Ma Myo Thu Aye", photo: "/review/review1.jpg" },
+  { name: "Ma Nadi Win", photo: "/review/review2.jpg" },
+  { name: "Mg Hein Lin Aung", photo: "/review/review3.jpg" },
 ];
 
 export default function Home() {
@@ -82,17 +72,24 @@ export default function Home() {
       <Reveal>
         <section className="mx-auto max-w-7xl px-4 py-12 sm:px-12 sm:py-24">
           <p className="text-sm font-bold tracking-wide text-primary-light">
-            TESTIMONIALS
+            STUDENT&apos;S FEEDBACK
           </p>
           <h2 className="mt-4 max-w-2xl font-sans text-3xl font-semibold leading-tight text-foreground sm:text-6xl">
-            What Parents Are Saying About{" "}
+            What Students Are Saying About{" "}
             <span className="text-primary-light">Sunray</span>
           </h2>
 
-          <div className="mt-12 grid grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-12">
+          <div className="mt-12 grid grid-cols-1 gap-10 sm:grid-cols-2 sm:gap-12 lg:grid-cols-3">
             {testimonials.map((testimonial, i) => (
               <Reveal key={testimonial.name} delay={i * 0.1}>
-                <TestimonialCard {...testimonial} />
+                <div className="relative aspect-square w-full overflow-hidden">
+                  <Image
+                    src={testimonial.photo}
+                    alt={testimonial.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
               </Reveal>
             ))}
           </div>

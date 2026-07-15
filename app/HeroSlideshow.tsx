@@ -6,6 +6,24 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const photos = [1, 2, 3, 4, 5].map((n) => `/HeroImages/photo${n}.avif`);
 
+const slideTexts = [
+  {
+    title: "Accessibility",
+    description:
+      "To ensure elite-level education is accessible to every individual across Myanmar, regardless of geographic constraints.",
+  },
+  {
+    title: "Free Opportunities",
+    description:
+      "To provide completely free, high-standard learning courses, breaking financial limitations for aspiring scholars.",
+  },
+  {
+    title: "Workplace Empowerment",
+    description:
+      "To empower local students with practical, industry-demanded skills needed for immediate workplace integration.",
+  },
+];
+
 export default function HeroSlideshow() {
   const [index, setIndex] = useState(0);
 
@@ -45,13 +63,10 @@ export default function HeroSlideshow() {
           Welcome To
         </p>
         <h1 className="mt-1 max-w-3xl text-2xl font-extrabold uppercase leading-tight text-white sm:text-5xl">
-          Sunray Education Group
+          {slideTexts[index % slideTexts.length].title}
         </h1>
         <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/90 sm:mt-6 sm:text-base">
-          Our school &amp; college is dedicated to academic excellence,
-          character development, and leadership growth. With experienced
-          teachers and modern facilities, we ensure every learner reaches
-          their full potential.
+          {slideTexts[index % slideTexts.length].description}
         </p>
 
         <div className="mt-4 flex gap-2 sm:mt-8">

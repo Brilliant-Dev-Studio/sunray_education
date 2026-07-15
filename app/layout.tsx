@@ -3,6 +3,7 @@ import { Poppins } from "next/font/google";
 import SmoothScroll from "./SmoothScroll";
 import Footer from "./Footer";
 import CustomCursor from "./CustomCursor";
+import { SITE_URL } from "./site-config";
 import "./globals.css";
 
 const poppins = Poppins({
@@ -12,8 +13,32 @@ const poppins = Poppins({
 });
 
 export const metadata: Metadata = {
-  title: "Sunray Myanmar | Education Group",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: "Sunray Myanmar | Education Group",
+    template: "%s | Sunray Myanmar",
+  },
   description: "Shaping bright futures through quality education",
+  keywords: [
+    "Sunray Myanmar",
+    "free education Myanmar",
+    "vocational training Myanmar",
+    "English course Myanmar",
+    "Sunray Education Group",
+  ],
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: [
       { url: "/favicon.ico" },
@@ -23,6 +48,9 @@ export const metadata: Metadata = {
     apple: "/apple-touch-icon.png",
   },
   openGraph: {
+    type: "website",
+    url: SITE_URL,
+    siteName: "Sunray Myanmar",
     title: "Sunray Myanmar | Education Group",
     description: "Shaping bright futures through quality education",
     images: ["/social_sharing.png"],
