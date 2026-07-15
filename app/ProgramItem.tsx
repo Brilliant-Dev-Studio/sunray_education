@@ -1,50 +1,51 @@
 type Program = {
   title: string;
+  slug: string;
   audience: string;
   syllabus: string;
   use: string;
-  isFirst?: boolean;
 };
 
 export default function ProgramItem({
   title,
+  slug,
   audience,
   syllabus,
   use,
-  isFirst = false,
 }: Program) {
   return (
-    <div
-      className={`py-8 ${isFirst ? "" : "border-t border-foreground/10"}`}
+    <a
+      href={`/programs/${slug}`}
+      className="flex h-full flex-col overflow-hidden rounded-2xl border-t-4 border-primary-light bg-foreground/3 p-8 shadow-md transition-transform hover:-translate-y-1"
     >
-      <h3 className="font-serif text-2xl text-foreground">{title}</h3>
+      <h3 className="text-xl font-bold leading-snug text-foreground">
+        {title}
+      </h3>
 
-      <dl className="mt-5 space-y-4">
-        <div className="sm:flex sm:gap-6">
-          <dt className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-light sm:w-40 sm:shrink-0">
+      <div className="mt-5 space-y-4">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-primary-light">
             Target Audience
-          </dt>
-          <dd className="mt-1 text-sm leading-relaxed text-muted sm:mt-0">
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-muted">
             {audience}
-          </dd>
+          </p>
         </div>
-        <div className="sm:flex sm:gap-6">
-          <dt className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-light sm:w-40 sm:shrink-0">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-primary-light">
             Syllabus Context
-          </dt>
-          <dd className="mt-1 text-sm leading-relaxed text-muted sm:mt-0">
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-muted">
             {syllabus}
-          </dd>
+          </p>
         </div>
-        <div className="sm:flex sm:gap-6">
-          <dt className="text-xs font-semibold uppercase tracking-[0.2em] text-primary-light sm:w-40 sm:shrink-0">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-wide text-primary-light">
             Career &amp; Life Use
-          </dt>
-          <dd className="mt-1 text-sm leading-relaxed text-muted sm:mt-0">
-            {use}
-          </dd>
+          </p>
+          <p className="mt-1 text-sm leading-relaxed text-muted">{use}</p>
         </div>
-      </dl>
-    </div>
+      </div>
+    </a>
   );
 }

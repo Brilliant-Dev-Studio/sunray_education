@@ -8,22 +8,19 @@ export default function Logo({
   return (
     <div className="flex items-center gap-3">
       <Image
-        src="/logo-crest.png"
+        src="/letterLogo.png"
         alt="Education Group Of Sunray Myanmar"
-        width={236}
-        height={281}
-        className={`w-auto ${crestClassName}`}
+        width={257}
+        height={255}
+        className={`w-auto rounded-md transition-all duration-350 ease-out ${crestClassName}`}
         priority
       />
-      <div className="flex items-center gap-3 border-l border-foreground/40 pl-3">
-        <p className="font-serif text-sm italic leading-tight text-foreground sm:text-base">
-          Education Group Of
-          <br />
-          Sunray
-          <br />
-          Myanmar
-        </p>
-      </div>
+      <p className="whitespace-nowrap font-serif leading-none text-foreground">
+        <span className="text-xl font-bold sm:text-2xl">Sunray</span>{" "}
+        <span className="text-xs font-medium sm:text-sm">
+          Education Group Myanmar
+        </span>
+      </p>
     </div>
   );
 }

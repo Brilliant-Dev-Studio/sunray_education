@@ -7,7 +7,7 @@ import ParallaxImage from "./ParallaxImage";
 const easeOut = [0.16, 1, 0.3, 1] as const;
 
 const contactRows = [
-  { label: "PHONE NUMBER", value: "+95 9 123 456 789" },
+  { label: "PHONE NUMBER", value: "09693016568" },
   { label: "EMAIL ADDRESS", value: "info@sunray-edu.com" },
   {
     label: "OPENING HOURS",
@@ -38,7 +38,7 @@ export default function ContactCTA() {
               show: { opacity: 1, y: 0 },
             }}
             transition={{ duration: 0.6, ease: easeOut }}
-            className="text-sm font-semibold tracking-wide text-primary-light"
+            className="text-sm font-bold tracking-wide text-primary-light"
           >
             JOIN LEARN GROW
           </motion.p>
@@ -48,7 +48,7 @@ export default function ContactCTA() {
               show: { opacity: 1, y: 0 },
             }}
             transition={{ duration: 0.7, ease: easeOut, delay: 0.1 }}
-            className="mt-4 font-serif text-4xl leading-tight text-foreground sm:text-6xl"
+            className="mt-4 font-sans text-4xl font-semibold leading-tight text-foreground sm:text-6xl"
           >
             Knowledge that{" "}
             <span className="text-primary-light">builds</span> leaders
@@ -60,13 +60,13 @@ export default function ContactCTA() {
               show: { opacity: 1, y: 0, scale: 1 },
             }}
             transition={{ duration: 0.8, ease: easeOut, delay: 0.25 }}
-            className="relative mt-16 h-64 w-full overflow-hidden rounded-2xl"
+            className="relative mt-16 w-full"
           >
             <ParallaxImage
-              src="/HeroSectionImages/welcome.avif"
+              src="/HeroSectionImages/heroMain.png"
               alt="Sunray Myanmar campus"
-              className="h-full w-full"
-              strength={30}
+              className="aspect-2600/1070 w-full"
+              strength={0}
             />
           </motion.div>
         </div>
@@ -127,10 +127,10 @@ export default function ContactCTA() {
               }}
               transition={{ duration: 0.6, ease: easeOut }}
             >
-              <p className="text-sm font-semibold tracking-wide text-primary-light">
+              <p className="text-sm font-bold tracking-wide text-primary-light">
                 {row.label}
               </p>
-              <p className="mt-3 text-lg leading-snug text-foreground">
+              <p className="mt-3 text-lg font-semibold leading-snug text-foreground">
                 {row.value}
               </p>
             </motion.div>

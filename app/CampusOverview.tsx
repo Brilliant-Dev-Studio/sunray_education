@@ -52,7 +52,7 @@ function CampusTile({
         filter,
         willChange: "transform, opacity, filter",
       }}
-      className={`relative w-full overflow-hidden rounded-2xl ${
+      className={`relative w-full overflow-hidden ${
         square ? "aspect-square" : "aspect-[4/5]"
       }`}
     >
@@ -137,7 +137,7 @@ export default function CampusOverview() {
         <p className="text-sm font-semibold tracking-wide text-primary-light">
           CAMPUS OVERVIEW
         </p>
-        <h2 className="mt-4 font-serif text-3xl leading-tight text-foreground">
+        <h2 className="mt-4 font-serif text-3xl font-semibold leading-tight text-foreground">
           To provide quality education that{" "}
           <span className="text-primary-light">develops</span> knowledge,
           skills
@@ -178,7 +178,7 @@ export default function CampusOverview() {
           <p className="text-sm font-semibold tracking-wide text-primary-light">
             CAMPUS OVERVIEW
           </p>
-          <h2 className="mt-4 font-serif text-2xl leading-tight text-foreground sm:text-4xl lg:text-5xl">
+          <h2 className="mt-4 font-serif text-2xl font-semibold leading-tight text-foreground sm:text-4xl lg:text-5xl">
             To provide quality education that{" "}
             <span className="text-primary-light">develops</span> knowledge,
             skills

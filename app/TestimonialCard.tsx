@@ -21,12 +21,12 @@ export default function TestimonialCard({
       />
 
       <div className="bg-primary-light px-6 py-6 sm:px-8">
-        <p className="text-lg leading-relaxed text-background">
+        <p className="text-lg font-semibold leading-relaxed text-white">
           &ldquo;{quote}&rdquo;
         </p>
       </div>
 
-      <p className="mt-4 text-sm text-muted">{name}</p>
+      <p className="mt-4 text-sm font-bold text-muted">{name}</p>
     </div>
   );
 }

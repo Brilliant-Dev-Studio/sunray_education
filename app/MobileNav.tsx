@@ -3,10 +3,11 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import ThemeToggle from "./ThemeToggle";
 
 const links = [
   { label: "Home", href: "/" },
-  { label: "About", href: "#" },
+  { label: "About", href: "/about" },
   { label: "Programs", href: "/programs" },
   { label: "Teachers", href: "/teachers" },
 ];
@@ -62,6 +63,7 @@ export default function MobileNav() {
               >
                 info@sunray-edu.com
               </a>
+              <ThemeToggle />
             </nav>
           </motion.div>
         )}

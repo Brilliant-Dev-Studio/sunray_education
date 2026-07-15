@@ -40,14 +40,14 @@ export default function FAQ() {
               className="flex w-full items-center gap-4 py-6 text-left"
               aria-expanded={isOpen}
             >
-              <span className="font-serif text-lg text-primary-light">
+              <span className="font-sans text-base font-semibold text-primary-light sm:text-lg">
                 {String(i + 1).padStart(2, "0")}.
               </span>
-              <span className="flex-1 font-serif text-xl text-foreground sm:text-2xl">
+              <span className="flex-1 font-sans text-base font-semibold text-foreground sm:text-xl md:text-2xl">
                 {faq.question}
               </span>
               <span
-                className={`text-2xl text-foreground transition-transform duration-300 ${
+                className={`text-xl text-foreground transition-transform duration-300 sm:text-2xl ${
                   isOpen ? "rotate-45" : ""
                 }`}
               >
