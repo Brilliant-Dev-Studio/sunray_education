@@ -1,5 +1,6 @@
 import { prisma } from "@/app/lib/prisma";
 import { approveCertificateRequest, rejectCertificateRequest } from "@/app/admin/actions/certificates";
+import { getInvoiceImageUrl } from "@/app/lib/s3";
 import { CheckCircleIcon, XCircleIcon } from "@/app/level-test/icons";
 
 const PAYMENT_LABELS: Record<string, string> = {
@@ -20,6 +21,10 @@ export default async function AdminCertificatesPage() {
     include: { user: true, test: true },
   });
 
+  const invoiceUrls = await Promise.all(
+    requests.map((req) => getInvoiceImageUrl(req.invoiceImage))
+  );
+
   return (
     <div className="p-8 max-w-5xl mx-auto">
       <header className="mb-8">
@@ -35,7 +40,7 @@ export default async function AdminCertificatesPage() {
         </div>
       ) : (
         <div className="space-y-4">
-          {requests.map((req) => {
+          {requests.map((req, i) => {
             const approveWithId = approveCertificateRequest.bind(null, req.id);
             const rejectWithId = rejectCertificateRequest.bind(null, req.id);
             return (
@@ -45,7 +50,7 @@ export default async function AdminCertificatesPage() {
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
-                  src={req.invoiceImage}
+                  src={invoiceUrls[i]}
                   alt="Payment invoice"
                   className="w-full sm:w-40 h-40 object-contain rounded-lg border border-gray-200 bg-gray-50 shrink-0"
                 />

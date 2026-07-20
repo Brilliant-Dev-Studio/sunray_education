@@ -51,7 +51,7 @@ export default function LevelTestApp({
   }
 
   return (
-    <div className="min-h-svh w-full bg-linear-to-b from-red-50/60 via-amber-50/30 to-background dark:from-primary-light/10 dark:via-background dark:to-background">
+    <div className="sm:min-h-svh w-full bg-linear-to-b from-red-50/60 via-amber-50/30 to-background dark:from-primary-light/10 dark:via-background dark:to-background">
     <div className="flex flex-col sm:min-h-svh sm:justify-center mx-auto max-w-5xl px-6 py-6 sm:px-12 sm:py-14">
       <AnimatePresence mode="wait">
         {stage === "pick" && (

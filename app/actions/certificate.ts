@@ -3,6 +3,7 @@
 import * as z from "zod";
 import { prisma } from "@/app/lib/prisma";
 import { getUserSession } from "@/app/lib/userSession";
+import { uploadInvoiceImage } from "@/app/lib/s3";
 
 const MAX_INVOICE_BYTES = 3 * 1024 * 1024; // 3MB, roughly (base64 is ~4/3 of raw size)
 
@@ -48,6 +49,13 @@ export async function submitCertificateRequest(
     return { error: "Test not found." };
   }
 
+  let invoiceImageKey: string;
+  try {
+    invoiceImageKey = await uploadInvoiceImage(data.invoiceImage, session.userId);
+  } catch {
+    return { error: "Could not upload invoice image. Try again." };
+  }
+
   const request = await prisma.certificateRequest.create({
     data: {
       userId: session.userId,
@@ -59,7 +67,7 @@ export async function submitCertificateRequest(
       percentage: data.percentage,
       contactEmail: data.contactEmail,
       paymentMethod: data.paymentMethod,
-      invoiceImage: data.invoiceImage,
+      invoiceImage: invoiceImageKey,
     },
   });
 

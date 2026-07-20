@@ -6,14 +6,29 @@ import {
   submitCertificateRequest,
   type SubmitCertificateState,
 } from "@/app/actions/certificate";
-import { UploadIcon, CheckCircleIcon, ArrowLeftIcon } from "./icons";
+import { UploadIcon, CheckCircleIcon, ArrowLeftIcon, XCircleIcon } from "./icons";
 
 type PaymentMethod = "UAB_PAY" | "KBZ_PAY" | "WAVE_MONEY";
 
-const PAYMENT_METHODS: { value: PaymentMethod; label: string; logo: string }[] = [
-  { value: "UAB_PAY", label: "UAB Pay", logo: "/payments/uabpay.jpg" },
-  { value: "KBZ_PAY", label: "KBZ Pay", logo: "/payments/kbzpay.png" },
-  { value: "WAVE_MONEY", label: "Wave Money", logo: "/payments/wavepay.jpg" },
+const PAYMENT_METHODS: { value: PaymentMethod; label: string; logo: string; qr: string }[] = [
+  {
+    value: "UAB_PAY",
+    label: "UAB Pay",
+    logo: "/payments/uabpay.jpg",
+    qr: "/PaymentsQR/uabSunray.jpg",
+  },
+  {
+    value: "KBZ_PAY",
+    label: "KBZ Pay",
+    logo: "/payments/kbzpay.png",
+    qr: "/PaymentsQR/kpazySunray.jpg",
+  },
+  {
+    value: "WAVE_MONEY",
+    label: "Wave Money",
+    logo: "/payments/wavepay.jpg",
+    qr: "/PaymentsQR/wavepaySunray.jpg",
+  },
 ];
 
 const MAX_FILE_BYTES = 2 * 1024 * 1024; // 2MB
@@ -43,6 +58,7 @@ export default function CertificateRequestPanel({
   const [preview, setPreview] = useState<string | null>(null);
   const [invoiceData, setInvoiceData] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [qrLightboxOpen, setQrLightboxOpen] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
@@ -184,6 +200,28 @@ export default function CertificateRequestPanel({
               </button>
             ))}
           </div>
+
+          {method && (
+            <div className="mt-3 flex flex-col items-center rounded-lg border border-foreground/15 bg-background p-4">
+              <p className="text-xs text-muted mb-2">
+                Scan with {PAYMENT_METHODS.find((p) => p.value === method)?.label} to pay
+                {" · "}
+                <span className="text-primary-light">tap to enlarge</span>
+              </p>
+              <button
+                type="button"
+                onClick={() => setQrLightboxOpen(true)}
+                className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-md overflow-hidden border border-foreground/10 cursor-zoom-in transition hover:opacity-90"
+              >
+                <Image
+                  src={PAYMENT_METHODS.find((p) => p.value === method)!.qr}
+                  alt={`${PAYMENT_METHODS.find((p) => p.value === method)?.label} QR code`}
+                  fill
+                  className="object-contain"
+                />
+              </button>
+            </div>
+          )}
         </div>
 
         <div>
@@ -229,6 +267,34 @@ export default function CertificateRequestPanel({
           {step === "submitting" ? "Submitting..." : "Submit Request"}
         </button>
       </form>
+
+      {qrLightboxOpen && method && (
+        <div
+          onClick={() => setQrLightboxOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6"
+        >
+          <button
+            type="button"
+            onClick={() => setQrLightboxOpen(false)}
+            aria-label="Close"
+            className="absolute top-5 right-5 text-white/80 hover:text-white transition"
+          >
+            <XCircleIcon className="w-8 h-8" />
+          </button>
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-sm rounded-2xl overflow-hidden bg-white shadow-2xl"
+          >
+            <Image
+              src={PAYMENT_METHODS.find((p) => p.value === method)!.qr}
+              alt={`${PAYMENT_METHODS.find((p) => p.value === method)?.label} QR code`}
+              width={800}
+              height={1200}
+              className="w-full h-auto"
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

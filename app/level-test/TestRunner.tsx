@@ -201,7 +201,7 @@ export default function TestRunner({
   const isSuccess = stage === "result" && Boolean(result) && !(result && "error" in result);
 
   return (
-    <div className="relative min-h-svh w-full overflow-hidden bg-background">
+    <div className="relative sm:min-h-svh w-full overflow-hidden bg-background">
       <Image
         src="/HeroImages/photo4.avif"
         alt=""
