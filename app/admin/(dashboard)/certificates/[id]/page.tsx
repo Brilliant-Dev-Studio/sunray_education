@@ -101,6 +101,7 @@ export default async function CertificateRequestDetailPage({
               label="Payment Method"
               value={PAYMENT_LABELS[req.paymentMethod] ?? req.paymentMethod}
             />
+            <Field label="Price" value={`${req.price.toLocaleString()} MMK`} />
           </div>
         </section>
 

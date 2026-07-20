@@ -117,6 +117,7 @@ export default async function AdminCertificatesPage({
                   <th className="px-5 py-3 font-medium">User</th>
                   <th className="px-5 py-3 font-medium">Test / Level</th>
                   <th className="px-5 py-3 font-medium">Score</th>
+                  <th className="px-5 py-3 font-medium">Price</th>
                   <th className="px-5 py-3 font-medium">Status</th>
                   <th className="px-5 py-3 font-medium">Actions</th>
                 </tr>
@@ -149,6 +150,9 @@ export default async function AdminCertificatesPage({
                       </td>
                       <td className="px-5 py-3 text-gray-700 whitespace-nowrap">
                         {req.score}/{req.total} ({req.percentage}%)
+                      </td>
+                      <td className="px-5 py-3 text-gray-700 whitespace-nowrap">
+                        {req.price.toLocaleString()} MMK
                       </td>
                       <td className="px-5 py-3">
                         <span

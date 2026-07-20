@@ -49,6 +49,12 @@ export async function submitCertificateRequest(
     return { error: "Test not found." };
   }
 
+  const settings = await prisma.siteSettings.upsert({
+    where: { id: "main" },
+    update: {},
+    create: { id: "main" },
+  });
+
   let invoiceImageKey: string;
   try {
     invoiceImageKey = await uploadInvoiceImage(data.invoiceImage, session.userId);
@@ -67,6 +73,7 @@ export async function submitCertificateRequest(
       percentage: data.percentage,
       contactEmail: data.contactEmail,
       paymentMethod: data.paymentMethod,
+      price: settings.certificatePrice,
       invoiceImage: invoiceImageKey,
     },
   });

@@ -10,6 +10,7 @@ import {
   getActivePaymentOptions,
   type PublicPaymentOption,
 } from "@/app/actions/paymentOptions";
+import { getCertificatePrice } from "@/app/actions/settings";
 import { UploadIcon, CheckCircleIcon, ArrowLeftIcon, XCircleIcon } from "./icons";
 
 type PaymentMethod = "UAB_PAY" | "KBZ_PAY" | "WAVE_MONEY";
@@ -43,12 +44,16 @@ export default function CertificateRequestPanel({
   const [error, setError] = useState<string | null>(null);
   const [qrLightboxOpen, setQrLightboxOpen] = useState(false);
   const [paymentOptions, setPaymentOptions] = useState<PublicPaymentOption[] | null>(null);
+  const [price, setPrice] = useState<number | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let cancelled = false;
     getActivePaymentOptions().then((options) => {
       if (!cancelled) setPaymentOptions(options);
+    });
+    getCertificatePrice().then((p) => {
+      if (!cancelled) setPrice(p);
     });
     return () => {
       cancelled = true;
@@ -156,6 +161,15 @@ export default function CertificateRequestPanel({
         Fill in your details below. We&apos;ll email your certificate once your payment is
         verified.
       </p>
+
+      {price !== null && (
+        <div className="mt-4 flex items-center justify-between rounded-lg border border-primary-light/30 bg-primary/5 px-4 py-3">
+          <span className="text-sm text-foreground font-medium">Certificate Price</span>
+          <span className="text-lg font-semibold text-primary-light">
+            {price.toLocaleString()} MMK
+          </span>
+        </div>
+      )}
 
       <div className="mt-4 rounded-lg border border-foreground/15 bg-foreground/5 px-4 py-3 text-xs text-muted leading-relaxed">
         Certificates are delivered to your email after payment verification — please

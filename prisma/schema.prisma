@@ -38,6 +38,13 @@ model Test {
   certificateRequests CertificateRequest[]
 }
 
+// Singleton row (id always "main") holding admin-controlled site settings.
+model SiteSettings {
+  id               String   @id @default("main")
+  certificatePrice Int      @default(0) // in MMK
+  updatedAt        DateTime @updatedAt
+}
+
 enum PaymentMethod {
   UAB_PAY
   KBZ_PAY
@@ -76,6 +83,7 @@ model CertificateRequest {
   percentage    Int
   contactEmail  String
   paymentMethod PaymentMethod
+  price         Int                @default(0) // MMK price snapshot at time of request
   invoiceImage  String // base64 data URI of the uploaded payment invoice
   status        CertificateStatus  @default(PENDING)
   createdAt     DateTime           @default(now())
