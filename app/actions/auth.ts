@@ -6,6 +6,8 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/app/lib/prisma";
 import { createUserSession, deleteUserSession, getUserSession } from "@/app/lib/userSession";
 
+
+
 const SignupSchema = z.object({
   name: z.string().min(2, { error: "Name must be at least 2 characters." }).trim(),
   email: z.email({ error: "Enter a valid email address." }).trim(),
