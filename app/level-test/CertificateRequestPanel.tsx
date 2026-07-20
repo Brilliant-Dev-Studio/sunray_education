@@ -1,35 +1,18 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import {
   submitCertificateRequest,
   type SubmitCertificateState,
 } from "@/app/actions/certificate";
+import {
+  getActivePaymentOptions,
+  type PublicPaymentOption,
+} from "@/app/actions/paymentOptions";
 import { UploadIcon, CheckCircleIcon, ArrowLeftIcon, XCircleIcon } from "./icons";
 
 type PaymentMethod = "UAB_PAY" | "KBZ_PAY" | "WAVE_MONEY";
-
-const PAYMENT_METHODS: { value: PaymentMethod; label: string; logo: string; qr: string }[] = [
-  {
-    value: "UAB_PAY",
-    label: "UAB Pay",
-    logo: "/payments/uabpay.jpg",
-    qr: "/PaymentsQR/uabSunray.jpg",
-  },
-  {
-    value: "KBZ_PAY",
-    label: "KBZ Pay",
-    logo: "/payments/kbzpay.png",
-    qr: "/PaymentsQR/kpazySunray.jpg",
-  },
-  {
-    value: "WAVE_MONEY",
-    label: "Wave Money",
-    logo: "/payments/wavepay.jpg",
-    qr: "/PaymentsQR/wavepaySunray.jpg",
-  },
-];
 
 const MAX_FILE_BYTES = 2 * 1024 * 1024; // 2MB
 
@@ -59,7 +42,20 @@ export default function CertificateRequestPanel({
   const [invoiceData, setInvoiceData] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [qrLightboxOpen, setQrLightboxOpen] = useState(false);
+  const [paymentOptions, setPaymentOptions] = useState<PublicPaymentOption[] | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getActivePaymentOptions().then((options) => {
+      if (!cancelled) setPaymentOptions(options);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const selectedOption = paymentOptions?.find((p) => p.code === method);
 
   function handleFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
@@ -190,30 +186,41 @@ export default function CertificateRequestPanel({
           <label className="block text-sm font-medium text-foreground mb-1.5">
             Payment Method
           </label>
-          <div className="grid grid-cols-3 gap-2.5">
-            {PAYMENT_METHODS.map((pm) => (
-              <button
-                key={pm.value}
-                type="button"
-                onClick={() => setMethod(pm.value)}
-                className={`flex flex-col items-center gap-1 rounded-lg border bg-background px-2 py-2 sm:py-3 text-xs font-medium transition ${
-                  method === pm.value
-                    ? "border-primary-light bg-primary/5"
-                    : "border-foreground/15 hover:border-foreground/30"
-                }`}
-              >
-                <span className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-md overflow-hidden bg-white border border-foreground/10">
-                  <Image src={pm.logo} alt={pm.label} fill className="object-cover" />
-                </span>
-                <span className="text-foreground">{pm.label}</span>
-              </button>
-            ))}
-          </div>
+          {paymentOptions === null ? (
+            <div className="flex items-center gap-2 text-sm text-muted py-2">
+              <div className="w-4 h-4 border-2 border-foreground/10 border-t-primary-light rounded-full animate-spin" />
+              Loading payment methods...
+            </div>
+          ) : paymentOptions.length === 0 ? (
+            <p className="text-sm text-muted">
+              No payment methods are available right now. Contact support.
+            </p>
+          ) : (
+            <div className="grid grid-cols-3 gap-2.5">
+              {paymentOptions.map((pm) => (
+                <button
+                  key={pm.code}
+                  type="button"
+                  onClick={() => setMethod(pm.code)}
+                  className={`flex flex-col items-center gap-1 rounded-lg border bg-background px-2 py-2 sm:py-3 text-xs font-medium transition ${
+                    method === pm.code
+                      ? "border-primary-light bg-primary/5"
+                      : "border-foreground/15 hover:border-foreground/30"
+                  }`}
+                >
+                  <span className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-md overflow-hidden bg-white border border-foreground/10">
+                    <Image src={pm.logoUrl} alt={pm.label} fill className="object-cover" />
+                  </span>
+                  <span className="text-foreground">{pm.label}</span>
+                </button>
+              ))}
+            </div>
+          )}
 
-          {method && (
+          {selectedOption && (
             <div className="mt-3 flex flex-col items-center rounded-lg border border-foreground/15 bg-background p-4">
               <p className="text-xs text-muted mb-2">
-                Scan with {PAYMENT_METHODS.find((p) => p.value === method)?.label} to pay
+                Scan with {selectedOption.label} to pay
                 {" · "}
                 <span className="text-primary-light">tap to enlarge</span>
               </p>
@@ -223,8 +230,8 @@ export default function CertificateRequestPanel({
                 className="relative w-40 h-40 sm:w-48 sm:h-48 rounded-md overflow-hidden border border-foreground/10 cursor-zoom-in transition hover:opacity-90"
               >
                 <Image
-                  src={PAYMENT_METHODS.find((p) => p.value === method)!.qr}
-                  alt={`${PAYMENT_METHODS.find((p) => p.value === method)?.label} QR code`}
+                  src={selectedOption.qrUrl}
+                  alt={`${selectedOption.label} QR code`}
                   fill
                   className="object-contain"
                 />
@@ -277,7 +284,7 @@ export default function CertificateRequestPanel({
         </button>
       </form>
 
-      {qrLightboxOpen && method && (
+      {qrLightboxOpen && selectedOption && (
         <div
           onClick={() => setQrLightboxOpen(false)}
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-6"
@@ -295,8 +302,8 @@ export default function CertificateRequestPanel({
             className="relative w-full max-w-sm rounded-2xl overflow-hidden bg-white shadow-2xl"
           >
             <Image
-              src={PAYMENT_METHODS.find((p) => p.value === method)!.qr}
-              alt={`${PAYMENT_METHODS.find((p) => p.value === method)?.label} QR code`}
+              src={selectedOption.qrUrl}
+              alt={`${selectedOption.label} QR code`}
               width={800}
               height={1200}
               className="w-full h-auto"

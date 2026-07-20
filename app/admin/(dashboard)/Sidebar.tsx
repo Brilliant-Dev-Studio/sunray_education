@@ -9,6 +9,8 @@ import {
   FileTextIcon,
   PlusIcon,
   AwardIcon,
+  UsersIcon,
+  CreditCardIcon,
   LogOutIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -19,6 +21,8 @@ const NAV_ITEMS = [
   { href: "/admin/tests", label: "Level Tests", icon: FileTextIcon },
   { href: "/admin/tests/new", label: "Create Test", icon: PlusIcon },
   { href: "/admin/certificates", label: "Certificates", icon: AwardIcon },
+  { href: "/admin/users", label: "Users", icon: UsersIcon },
+  { href: "/admin/payment-methods", label: "Payment Methods", icon: CreditCardIcon },
 ];
 
 const STORAGE_KEY = "sunray_admin_sidebar_collapsed";

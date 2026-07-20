@@ -2,6 +2,7 @@
 
 import * as z from "zod";
 import { redirect } from "next/navigation";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/app/lib/prisma";
 import { verifyAdminSession } from "@/app/lib/dal";
 
@@ -132,4 +133,133 @@ export async function deleteTest(testId: string) {
 export async function toggleTestActive(testId: string, isActive: boolean) {
   await verifyAdminSession();
   await prisma.test.update({ where: { id: testId }, data: { isActive } });
+  revalidatePath(`/admin/tests/${testId}`);
+  revalidatePath("/admin/tests");
+}
+
+export async function updateTestDetails(testId: string, formData: FormData) {
+  await verifyAdminSession();
+  const name = String(formData.get("name") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  if (!name) return;
+
+  await prisma.test.update({
+    where: { id: testId },
+    data: { name, description: description || null },
+  });
+  revalidatePath(`/admin/tests/${testId}`);
+  revalidatePath("/admin/tests");
+}
+
+export async function createLevel(testId: string, formData: FormData) {
+  await verifyAdminSession();
+  const code = String(formData.get("code") ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const minScore = Number(formData.get("minScore") ?? 0);
+  const maxScore = Number(formData.get("maxScore") ?? 0);
+  if (!code || !name) return;
+
+  const count = await prisma.level.count({ where: { testId } });
+  await prisma.level.create({
+    data: { testId, code, name, description: description || null, minScore, maxScore, order: count },
+  });
+  revalidatePath(`/admin/tests/${testId}`);
+}
+
+export async function updateLevel(levelId: string, testId: string, formData: FormData) {
+  await verifyAdminSession();
+  const code = String(formData.get("code") ?? "").trim();
+  const name = String(formData.get("name") ?? "").trim();
+  const description = String(formData.get("description") ?? "").trim();
+  const minScore = Number(formData.get("minScore") ?? 0);
+  const maxScore = Number(formData.get("maxScore") ?? 0);
+  if (!code || !name) return;
+
+  await prisma.level.update({
+    where: { id: levelId },
+    data: { code, name, description: description || null, minScore, maxScore },
+  });
+  revalidatePath(`/admin/tests/${testId}`);
+}
+
+export async function deleteLevel(levelId: string, testId: string) {
+  await verifyAdminSession();
+  await prisma.level.delete({ where: { id: levelId } });
+  revalidatePath(`/admin/tests/${testId}`);
+}
+
+const QuestionFormSchema = z.object({
+  text: z.string().min(1, { error: "Question text is required." }),
+  levelId: z.string().optional(),
+  labels: z.array(z.string()),
+  texts: z.array(z.string()),
+  correctIndex: z.number().int(),
+});
+
+function parseQuestionForm(formData: FormData) {
+  const text = String(formData.get("text") ?? "").trim();
+  const levelId = String(formData.get("levelId") ?? "") || undefined;
+  const labels = ["A", "B", "C", "D"];
+  const texts = labels.map((l) => String(formData.get(`option_${l}`) ?? "").trim());
+  const correctIndex = Number(formData.get("correct") ?? -1);
+
+  return QuestionFormSchema.safeParse({ text, levelId, labels, texts, correctIndex });
+}
+
+export async function createQuestion(testId: string, formData: FormData) {
+  await verifyAdminSession();
+  const parsed = parseQuestionForm(formData);
+  if (!parsed.success) return;
+  const { text, levelId, labels, texts, correctIndex } = parsed.data;
+
+  const filled = labels
+    .map((label, i) => ({ label, text: texts[i], isCorrect: i === correctIndex }))
+    .filter((o) => o.text.length > 0);
+  if (filled.length < 2 || !filled.some((o) => o.isCorrect)) return;
+
+  const count = await prisma.question.count({ where: { testId } });
+  await prisma.question.create({
+    data: {
+      testId,
+      levelId: levelId || null,
+      text,
+      order: count,
+      options: { create: filled },
+    },
+  });
+  revalidatePath(`/admin/tests/${testId}`);
+  redirect(`/admin/tests/${testId}`);
+}
+
+export async function updateQuestion(questionId: string, testId: string, formData: FormData) {
+  await verifyAdminSession();
+  const parsed = parseQuestionForm(formData);
+  if (!parsed.success) return;
+  const { text, levelId, labels, texts, correctIndex } = parsed.data;
+
+  const filled = labels
+    .map((label, i) => ({ label, text: texts[i], isCorrect: i === correctIndex }))
+    .filter((o) => o.text.length > 0);
+  if (filled.length < 2 || !filled.some((o) => o.isCorrect)) return;
+
+  await prisma.$transaction([
+    prisma.option.deleteMany({ where: { questionId } }),
+    prisma.question.update({
+      where: { id: questionId },
+      data: {
+        text,
+        levelId: levelId || null,
+        options: { create: filled },
+      },
+    }),
+  ]);
+  revalidatePath(`/admin/tests/${testId}`);
+  redirect(`/admin/tests/${testId}`);
+}
+
+export async function deleteQuestion(questionId: string, testId: string) {
+  await verifyAdminSession();
+  await prisma.question.delete({ where: { id: questionId } });
+  revalidatePath(`/admin/tests/${testId}`);
 }

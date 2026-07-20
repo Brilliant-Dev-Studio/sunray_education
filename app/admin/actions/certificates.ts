@@ -11,6 +11,7 @@ export async function approveCertificateRequest(requestId: string) {
     data: { status: "APPROVED" },
   });
   revalidatePath("/admin/certificates");
+  revalidatePath(`/admin/certificates/${requestId}`);
 }
 
 export async function rejectCertificateRequest(requestId: string) {
@@ -20,4 +21,5 @@ export async function rejectCertificateRequest(requestId: string) {
     data: { status: "REJECTED" },
   });
   revalidatePath("/admin/certificates");
+  revalidatePath(`/admin/certificates/${requestId}`);
 }

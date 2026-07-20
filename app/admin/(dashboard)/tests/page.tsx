@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { prisma } from "@/app/lib/prisma";
-import { PlusIcon } from "@/app/admin/icons";
+import { PlusIcon, EyeIcon } from "@/app/admin/icons";
 
 export default async function TestsListPage() {
   const tests = await prisma.test.findMany({
@@ -42,6 +42,7 @@ export default async function TestsListPage() {
                 <th className="px-5 py-3 font-medium">Levels</th>
                 <th className="px-5 py-3 font-medium">Status</th>
                 <th className="px-5 py-3 font-medium">Created</th>
+                <th className="px-5 py-3 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -75,6 +76,16 @@ export default async function TestsListPage() {
                     {new Intl.DateTimeFormat("en-US", {
                       dateStyle: "medium",
                     }).format(t.createdAt)}
+                  </td>
+                  <td className="px-5 py-3">
+                    <Link
+                      href={`/admin/tests/${t.id}`}
+                      title="View questions"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 text-gray-600 hover:border-[#ef3444] hover:text-[#ef3444] px-3 py-1.5 text-xs font-semibold transition"
+                    >
+                      <EyeIcon className="w-3.5 h-3.5" />
+                      View Questions
+                    </Link>
                   </td>
                 </tr>
               ))}

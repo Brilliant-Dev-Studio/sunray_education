@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:seed": "tsx --env-file=.env prisma/seed.ts",
-    "db:seed:demo-test": "tsx --env-file=.env prisma/seed-demo-test.ts"
+    "db:seed:demo-test": "tsx --env-file=.env prisma/seed-demo-test.ts",
+    "db:seed:payment-options": "tsx --env-file=.env prisma/seed-payment-options.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1090.0",
