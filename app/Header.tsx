@@ -7,6 +7,7 @@ import MobileNav from "./MobileNav";
 import Logo from "./Logo";
 import SubHeader from "./SubHeader";
 import ProgramsDropdown from "./ProgramsDropdown";
+import AccountMenu from "./AccountMenu";
 
 const FULL_HEIGHT = 86;
 const SHRUNK_HEIGHT = 76;
@@ -74,7 +75,13 @@ export default function Header() {
               label="Teachers"
               isActive={pathname === "/teachers"}
             />
+            <NavLink
+              href="/level-test"
+              label="Test Level"
+              isActive={pathname.startsWith("/level-test")}
+            />
           </nav>
+          <AccountMenu />
         </div>
         <MobileNav />
       </motion.header>

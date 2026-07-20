@@ -4,12 +4,14 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import ThemeToggle from "./ThemeToggle";
+import AccountMenu from "./AccountMenu";
 
 const links = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
   { label: "Programs", href: "/programs" },
   { label: "Teachers", href: "/teachers" },
+  { label: "Test Level", href: "/level-test" },
 ];
 
 export default function MobileNav() {
@@ -63,6 +65,11 @@ export default function MobileNav() {
               >
                 info@sunray-edu.com
               </a>
+              <div className="pt-1 border-t border-foreground/10">
+                <div className="pt-4">
+                  <AccountMenu />
+                </div>
+              </div>
               <ThemeToggle />
             </nav>
           </motion.div>

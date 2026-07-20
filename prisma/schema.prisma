@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model User {
+  id                  String               @id @default(cuid())
+  name                String
+  email               String               @unique
+  passwordHash        String
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  certificateRequests CertificateRequest[]
+}
+
+model Test {
+  id                  String               @id @default(cuid())
+  name                String
+  slug                String               @unique
+  description         String?
+  isActive            Boolean              @default(true)
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
+  levels              Level[]
+  questions           Question[]
+  certificateRequests CertificateRequest[]
+}
+
+enum PaymentMethod {
+  UAB_PAY
+  KBZ_PAY
+  WAVE_MONEY
+}
+
+enum CertificateStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+model CertificateRequest {
+  id            String             @id @default(cuid())
+  user          User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId        String
+  test          Test               @relation(fields: [testId], references: [id], onDelete: Cascade)
+  testId        String
+  levelCode     String
+  levelName     String
+  score         Int
+  total         Int
+  percentage    Int
+  contactEmail  String
+  paymentMethod PaymentMethod
+  invoiceImage  String // base64 data URI of the uploaded payment invoice
+  status        CertificateStatus  @default(PENDING)
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  @@index([userId])
+  @@index([testId])
+  @@index([status])
+}
+
+// CEFR band for a test: score range -> level (A1..C2 by default)
+model Level {
+  id          String     @id @default(cuid())
+  test        Test       @relation(fields: [testId], references: [id], onDelete: Cascade)
+  testId      String
+  code        String // e.g. A1, A2, B1, B2, C1, C2
+  name        String // e.g. Beginner
+  description String?
+  minScore    Int
+  maxScore    Int
+  order       Int
+  questions   Question[]
+
+  @@index([testId])
+}
+
+model Question {
+  id       String   @id @default(cuid())
+  test     Test     @relation(fields: [testId], references: [id], onDelete: Cascade)
+  testId   String
+  level    Level?   @relation(fields: [levelId], references: [id], onDelete: SetNull)
+  levelId  String?
+  text     String
+  order    Int
+  options  Option[]
+
+  @@index([testId])
+  @@index([levelId])
+}
+
+model Option {
+  id         String   @id @default(cuid())
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  questionId String
+  label      String // A, B, C, D
+  text       String
+  isCorrect  Boolean  @default(false)
+
+  @@index([questionId])
+}

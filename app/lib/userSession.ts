@@ -1,0 +1,64 @@
+import "server-only";
+import { SignJWT, jwtVerify } from "jose";
+import { cookies } from "next/headers";
+
+const secretKey = process.env.SESSION_SECRET;
+if (!secretKey) {
+  throw new Error("SESSION_SECRET env var is not set");
+}
+const encodedKey = new TextEncoder().encode(secretKey);
+
+const COOKIE_NAME = "sunray_user_session";
+
+export type UserSessionPayload = {
+  userId: string;
+  email: string;
+  name: string;
+};
+
+export async function encryptUserSession(payload: UserSessionPayload) {
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("30d")
+    .sign(encodedKey);
+}
+
+export async function decryptUserSession(session: string | undefined = "") {
+  try {
+    const { payload } = await jwtVerify(session, encodedKey, {
+      algorithms: ["HS256"],
+    });
+    return payload as UserSessionPayload & { iat: number; exp: number };
+  } catch {
+    return null;
+  }
+}
+
+export async function createUserSession(payload: UserSessionPayload) {
+  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+  const session = await encryptUserSession(payload);
+  const cookieStore = await cookies();
+
+  cookieStore.set(COOKIE_NAME, session, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    expires: expiresAt,
+    sameSite: "lax",
+    path: "/",
+  });
+}
+
+export async function getUserSession() {
+  const cookieStore = await cookies();
+  const session = cookieStore.get(COOKIE_NAME)?.value;
+  if (!session) return null;
+  return decryptUserSession(session);
+}
+
+export async function deleteUserSession() {
+  const cookieStore = await cookies();
+  cookieStore.delete(COOKIE_NAME);
+}
+
+export const USER_SESSION_COOKIE_NAME = COOKIE_NAME;
