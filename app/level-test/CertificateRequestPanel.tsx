@@ -161,6 +161,15 @@ export default function CertificateRequestPanel({
         verified.
       </p>
 
+      <div className="mt-4 rounded-lg border border-foreground/15 bg-foreground/5 px-4 py-3 text-xs text-muted leading-relaxed">
+        Certificates are delivered to your email after payment verification — please
+        allow some processing time. Having an issue? Contact our support line at{" "}
+        <a href="tel:09693016568" className="text-primary-light font-semibold hover:underline">
+          09693016568
+        </a>
+        .
+      </div>
+
       <form onSubmit={handleSubmit} className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
         <div>
           <label htmlFor="cert-email" className="block text-sm font-medium text-foreground mb-1.5">
