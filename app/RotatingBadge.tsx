@@ -22,7 +22,7 @@ export default function RotatingBadge() {
           className="fill-muted text-[13px] font-semibold uppercase tracking-[0.25em]"
         >
           <textPath href="#badge-circle" startOffset="0%">
-            Since 1990 — Start Building Your Future Today —
+            Since 2024 — Start Building Your Future Today —
           </textPath>
         </text>
       </motion.svg>

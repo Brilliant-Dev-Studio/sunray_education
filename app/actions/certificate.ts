@@ -4,6 +4,7 @@ import * as z from "zod";
 import { prisma } from "@/app/lib/prisma";
 import { getUserSession } from "@/app/lib/userSession";
 import { uploadInvoiceImage } from "@/app/lib/s3";
+import { notifyTelegramNewCertificateRequest } from "@/app/lib/telegram";
 
 const MAX_INVOICE_BYTES = 3 * 1024 * 1024; // 3MB, roughly (base64 is ~4/3 of raw size)
 
@@ -44,9 +45,15 @@ export async function submitCertificateRequest(
 
   const data = validated.data;
 
-  const test = await prisma.test.findUnique({ where: { id: data.testId } });
+  const [test, user] = await Promise.all([
+    prisma.test.findUnique({ where: { id: data.testId } }),
+    prisma.user.findUnique({ where: { id: session.userId } }),
+  ]);
   if (!test) {
     return { error: "Test not found." };
+  }
+  if (!user) {
+    return { error: "Account not found." };
   }
 
   const settings = await prisma.siteSettings.upsert({
@@ -76,6 +83,22 @@ export async function submitCertificateRequest(
       price: settings.certificatePrice,
       invoiceImage: invoiceImageKey,
     },
+  });
+
+  await notifyTelegramNewCertificateRequest({
+    requestId: request.id,
+    userName: user.name,
+    userEmail: user.email,
+    contactEmail: data.contactEmail,
+    testName: test.name,
+    levelCode: data.levelCode,
+    levelName: data.levelName,
+    score: data.score,
+    total: data.total,
+    percentage: data.percentage,
+    paymentMethod: data.paymentMethod,
+    price: settings.certificatePrice,
+    invoiceImageDataUri: data.invoiceImage,
   });
 
   return { success: true, requestId: request.id };
