@@ -217,7 +217,13 @@ export default function TestRunner({
         }`}
       />
       {isSuccess && <Confetti />}
-    <div className="relative flex flex-col sm:h-svh sm:justify-center sm:overflow-y-auto mx-auto max-w-5xl px-4 pt-20 pb-8 sm:px-12 sm:pt-24 sm:pb-6">
+    <div
+      className={`relative flex flex-col sm:justify-center mx-auto max-w-5xl px-4 pt-20 pb-8 sm:px-12 ${
+        stage === "result"
+          ? "sm:h-svh sm:overflow-y-auto sm:pt-24 sm:pb-6"
+          : "sm:min-h-svh sm:py-14"
+      }`}
+    >
       <AnimatePresence mode="wait">
         {stage === "loading" && (
           <motion.div
