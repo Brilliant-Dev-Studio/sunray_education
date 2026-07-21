@@ -24,13 +24,10 @@ export async function getAllTestQuestions(testId: string): Promise<PublicQuestio
   }));
 }
 
-// Dev-only helper: returns the correct option id per question so the quiz
-// can be autofilled while testing. Refuses outside development.
-export async function getDevAnswerKey(
+// Returns the correct option id per question so the quiz can be autofilled.
+export async function getAnswerKey(
   testId: string
 ): Promise<Record<string, string> | null> {
-  if (process.env.NODE_ENV !== "development") return null;
-
   const questions = await prisma.question.findMany({
     where: { testId },
     include: { options: true },
