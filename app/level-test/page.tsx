@@ -12,14 +12,12 @@ export default async function LevelTestPage() {
     where: { isActive: true },
     orderBy: { createdAt: "asc" },
     include: {
-      levels: {
-        orderBy: { order: "asc" },
-        include: { _count: { select: { questions: true } } },
-      },
+      levels: { orderBy: { order: "asc" } },
+      _count: { select: { questions: true } },
     },
   });
 
-  if (!test) {
+  if (!test || test._count.questions === 0) {
     return (
       <>
         <Header />
@@ -32,15 +30,7 @@ export default async function LevelTestPage() {
     );
   }
 
-  const levels = test.levels
-    .filter((l) => l._count.questions > 0)
-    .map((l) => ({
-      id: l.id,
-      code: l.code,
-      name: l.name,
-      description: l.description,
-      questionCount: l._count.questions,
-    }));
+  const levels = test.levels.map((l) => ({ code: l.code, name: l.name }));
 
   return (
     <>
@@ -48,6 +38,7 @@ export default async function LevelTestPage() {
       <LevelTestApp
         test={{ id: test.id, name: test.name, description: test.description }}
         levels={levels}
+        questionCount={test._count.questions}
       />
     </>
   );

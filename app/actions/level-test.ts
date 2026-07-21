@@ -2,6 +2,7 @@
 
 import * as z from "zod";
 import { prisma } from "@/app/lib/prisma";
+import { resolveLevelForScore } from "@/app/lib/grading";
 
 export type PublicQuestion = {
   id: string;
@@ -9,12 +10,9 @@ export type PublicQuestion = {
   options: { id: string; label: string; text: string }[];
 };
 
-export async function getLevelQuestions(
-  testId: string,
-  levelId: string
-): Promise<PublicQuestion[]> {
+export async function getAllTestQuestions(testId: string): Promise<PublicQuestion[]> {
   const questions = await prisma.question.findMany({
-    where: { testId, levelId },
+    where: { testId },
     orderBy: { order: "asc" },
     include: { options: { orderBy: { label: "asc" } } },
   });
@@ -26,9 +24,28 @@ export async function getLevelQuestions(
   }));
 }
 
+// Dev-only helper: returns the correct option id per question so the quiz
+// can be autofilled while testing. Refuses outside development.
+export async function getDevAnswerKey(
+  testId: string
+): Promise<Record<string, string> | null> {
+  if (process.env.NODE_ENV !== "development") return null;
+
+  const questions = await prisma.question.findMany({
+    where: { testId },
+    include: { options: true },
+  });
+
+  const key: Record<string, string> = {};
+  for (const q of questions) {
+    const correct = q.options.find((o) => o.isCorrect);
+    if (correct) key[q.id] = correct.id;
+  }
+  return key;
+}
+
 const SubmitSchema = z.object({
   testId: z.string().min(1),
-  levelId: z.string().min(1),
   timeTakenSeconds: z.number().int().min(0),
   answers: z.array(
     z.object({
@@ -52,6 +69,8 @@ export type SubmitLevelTestResult =
       level: { code: string; name: string; description: string | null };
     };
 
+// Grades every question in the test (mixed CEFR levels), then maps the total
+// score onto whichever level's score band the result falls into.
 export async function submitLevelTestAttempt(
   input: SubmitLevelTestInput
 ): Promise<SubmitLevelTestResult> {
@@ -60,21 +79,18 @@ export async function submitLevelTestAttempt(
     return { error: "Invalid submission." };
   }
 
-  const { testId, levelId, answers, timeTakenSeconds } = validated.data;
+  const { testId, answers, timeTakenSeconds } = validated.data;
 
-  const level = await prisma.level.findFirst({
-    where: { id: levelId, testId },
-  });
-  if (!level) {
-    return { error: "Level not found." };
-  }
+  const [questions, levels] = await Promise.all([
+    prisma.question.findMany({ where: { testId }, include: { options: true } }),
+    prisma.level.findMany({ where: { testId } }),
+  ]);
 
-  const questions = await prisma.question.findMany({
-    where: { testId, levelId },
-    include: { options: true },
-  });
   if (questions.length === 0) {
-    return { error: "This level has no questions yet." };
+    return { error: "This test has no questions yet." };
+  }
+  if (levels.length === 0) {
+    return { error: "This test has no levels configured." };
   }
 
   const answerByQuestion = new Map(answers.map((a) => [a.questionId, a.optionId]));
@@ -89,6 +105,11 @@ export async function submitLevelTestAttempt(
 
   const total = questions.length;
   const percentage = Math.round((score / total) * 100);
+  const level = resolveLevelForScore(score, levels);
+
+  if (!level) {
+    return { error: "Could not determine your level." };
+  }
 
   return {
     score,

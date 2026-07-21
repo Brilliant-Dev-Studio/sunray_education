@@ -102,7 +102,7 @@ export default function ShareResultButton({
       </button>
 
       {open && (
-        <div className="absolute z-20 top-full mt-2 left-1/2 -translate-x-1/2 w-64 rounded-2xl border border-foreground/10 bg-background shadow-xl p-4">
+        <div className="absolute z-50 bottom-full mb-2 left-1/2 -translate-x-1/2 w-64 rounded-2xl border border-foreground/10 bg-background shadow-xl p-4">
           <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-3 text-center">
             Share your result
           </p>

@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  getLevelQuestions,
+  getAllTestQuestions,
+  getDevAnswerKey,
   submitLevelTestAttempt,
   type PublicQuestion,
   type SubmitLevelTestResult,
@@ -21,14 +22,7 @@ import {
 } from "./icons";
 import CertificateRequestPanel from "./CertificateRequestPanel";
 import ShareResultButton from "./ShareResultButton";
-
-type LevelSummary = {
-  id: string;
-  code: string;
-  name: string;
-  description: string | null;
-  questionCount: number;
-};
+import Confetti from "./Confetti";
 
 type TestSummary = {
   id: string;
@@ -47,10 +41,10 @@ const CERTIFICATE_ELIGIBLE_PERCENTAGE = 40;
 
 export default function TestRunner({
   test,
-  level,
+  questionCount,
 }: {
   test: TestSummary;
-  level: LevelSummary;
+  questionCount: number;
 }) {
   const router = useRouter();
   const [stage, setStage] = useState<Stage>("loading");
@@ -67,11 +61,11 @@ export default function TestRunner({
   useEffect(() => {
     let cancelled = false;
 
-    getLevelQuestions(test.id, level.id)
+    getAllTestQuestions(test.id)
       .then((qs) => {
         if (cancelled) return;
         if (qs.length === 0) {
-          setErrorMsg("This level has no questions yet.");
+          setErrorMsg("This test has no questions yet.");
           setStage("result");
           return;
         }
@@ -89,7 +83,7 @@ export default function TestRunner({
     return () => {
       cancelled = true;
     };
-  }, [attempt, test.id, level.id]);
+  }, [attempt, test.id]);
 
   useEffect(() => {
     if (stage !== "quiz") return;
@@ -107,6 +101,13 @@ export default function TestRunner({
   function selectAnswer(optionId: string) {
     if (!currentQuestion) return;
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: optionId }));
+  }
+
+  async function autofillCorrectAnswers() {
+    const key = await getDevAnswerKey(test.id);
+    if (!key) return;
+    setAnswers(key);
+    setCurrentIndex(questions.length - 1);
   }
 
   function goNext() {
@@ -153,7 +154,6 @@ export default function TestRunner({
     const timeTakenSeconds = Math.floor((Date.now() - startedAt) / 1000);
     const res = await submitLevelTestAttempt({
       testId: test.id,
-      levelId: level.id,
       timeTakenSeconds,
       answers: Object.entries(answers).map(([questionId, optionId]) => ({
         questionId,
@@ -201,7 +201,7 @@ export default function TestRunner({
   const isSuccess = stage === "result" && Boolean(result) && !(result && "error" in result);
 
   return (
-    <div className="relative sm:min-h-svh w-full overflow-hidden bg-background">
+    <div className="relative sm:min-h-svh w-full overflow-x-hidden bg-background">
       <Image
         src="/HeroImages/photo4.avif"
         alt=""
@@ -216,7 +216,8 @@ export default function TestRunner({
             : "bg-linear-to-b from-red-50/95 via-amber-50/85 to-background/95 dark:from-primary-light/20 dark:via-background/90 dark:to-background/95"
         }`}
       />
-    <div className="relative flex flex-col sm:min-h-svh sm:justify-center mx-auto max-w-5xl px-4 pt-20 pb-8 sm:px-12 sm:py-14">
+      {isSuccess && <Confetti />}
+    <div className="relative flex flex-col sm:h-svh sm:justify-center sm:overflow-y-auto mx-auto max-w-5xl px-4 pt-20 pb-8 sm:px-12 sm:pt-24 sm:pb-6">
       <AnimatePresence mode="wait">
         {stage === "loading" && (
           <motion.div
@@ -227,7 +228,9 @@ export default function TestRunner({
             className="text-center py-24"
           >
             <div className="inline-block w-10 h-10 border-4 border-foreground/10 border-t-primary-light rounded-full animate-spin" />
-            <p className="text-muted mt-4 text-sm">Loading questions...</p>
+            <p className="text-muted mt-4 text-sm">
+              Loading {questionCount} question{questionCount === 1 ? "" : "s"}...
+            </p>
           </motion.div>
         )}
 
@@ -243,11 +246,22 @@ export default function TestRunner({
             <div className="flex items-center justify-between mb-3 sm:mb-5">
               <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-semibold uppercase tracking-wide text-muted">
                 <FlameIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-light" />
-                {level.code} · Question {currentIndex + 1} / {questions.length}
+                Question {currentIndex + 1} / {questions.length}
               </div>
-              <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-foreground bg-foreground/5 rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5">
-                <ClockIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                {formatTime(elapsed)}
+              <div className="flex items-center gap-2">
+                {process.env.NODE_ENV === "development" && (
+                  <button
+                    type="button"
+                    onClick={autofillCorrectAnswers}
+                    className="rounded-full border border-dashed border-primary-light/50 text-primary-light px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide hover:bg-primary-light/10 transition"
+                  >
+                    Autofill (dev)
+                  </button>
+                )}
+                <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-foreground bg-foreground/5 rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5">
+                  <ClockIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  {formatTime(elapsed)}
+                </div>
               </div>
             </div>
 
@@ -309,19 +323,11 @@ export default function TestRunner({
                 Previous
               </button>
 
-              <div className="hidden sm:flex items-center gap-1.5">
-                {questions.map((q, i) => (
-                  <span
-                    key={q.id}
-                    className={`rounded-full transition-all ${
-                      i === currentIndex
-                        ? "w-6 h-2.5 bg-primary-light"
-                        : answers[q.id]
-                          ? "w-2.5 h-2.5 bg-primary-light/50"
-                          : "w-2.5 h-2.5 bg-foreground/15"
-                    }`}
-                  />
-                ))}
+              <div className="hidden sm:flex items-center gap-1.5 text-sm font-semibold text-muted">
+                <span className="text-foreground">{answeredCount}</span>
+                <span>/</span>
+                <span>{questions.length}</span>
+                <span className="ml-1">answered</span>
               </div>
 
               {isLastQuestion ? (
@@ -378,7 +384,7 @@ export default function TestRunner({
                 isSuccess ? "bg-amber-300/25" : "bg-primary-light/15"
               }`}
             />
-            <div className="relative text-center rounded-3xl border border-foreground/10 bg-background p-6 sm:p-16 shadow-xl">
+            <div className="relative text-center rounded-3xl border border-foreground/10 bg-background p-6 sm:p-8 shadow-xl">
               {errorMsg || !result || "error" in result ? (
                 <>
                   <p className="text-primary-light font-medium">
@@ -390,22 +396,38 @@ export default function TestRunner({
                       className="inline-flex items-center gap-1.5 rounded-md border border-foreground/20 text-muted hover:text-foreground px-4 py-2.5 text-sm font-semibold uppercase tracking-wide transition"
                     >
                       <ArrowLeftIcon className="w-4 h-4" />
-                      Back to levels
+                      Back to Start
                     </button>
                   </div>
                 </>
               ) : (
                 <>
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.1 }}
-                    className="inline-flex items-center justify-center w-16 h-16 sm:w-28 sm:h-28 rounded-full bg-linear-to-br from-primary-light to-primary-light/70 text-white shadow-lg shadow-primary-light/30 mx-auto"
+                  <motion.p
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="text-xs sm:text-sm font-bold uppercase tracking-[0.3em] text-primary-light"
                   >
-                    <TrophyIcon className="w-8 h-8 sm:w-14 sm:h-14" />
-                  </motion.div>
+                    Test Complete
+                  </motion.p>
 
-                  <div className="flex items-center justify-center gap-1 sm:gap-1.5 mt-3 sm:mt-5">
+                  <div className="relative inline-flex items-center justify-center mt-3 sm:mt-3">
+                    <motion.span
+                      initial={{ opacity: 0.6, scale: 0.8 }}
+                      animate={{ opacity: [0.5, 0, 0.5], scale: [0.9, 1.5, 0.9] }}
+                      transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+                      className="absolute inset-0 rounded-full bg-primary-light/40 blur-sm"
+                    />
+                    <motion.div
+                      initial={{ scale: 0, rotate: -20 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ type: "spring", stiffness: 200, damping: 12, delay: 0.15 }}
+                      className="relative inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-linear-to-br from-primary-light to-primary-light/70 text-white shadow-xl shadow-primary-light/40 mx-auto"
+                    >
+                      <TrophyIcon className="w-8 h-8 sm:w-10 sm:h-10" />
+                    </motion.div>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-1 sm:gap-1.5 mt-3 sm:mt-3">
                     {[0, 1, 2].map((i) => (
                       <motion.span
                         key={i}
@@ -414,7 +436,7 @@ export default function TestRunner({
                         transition={{ delay: 0.3 + i * 0.15 }}
                       >
                         <StarIcon
-                          className={`w-6 h-6 sm:w-9 sm:h-9 ${
+                          className={`w-6 h-6 sm:w-7 sm:h-7 ${
                             i < stars ? "text-primary-light" : "text-foreground/15"
                           }`}
                           filled={i < stars}
@@ -423,40 +445,54 @@ export default function TestRunner({
                     ))}
                   </div>
 
-                  <h2 className="mt-3 sm:mt-5 font-sans text-2xl sm:text-4xl font-bold text-foreground">
+                  <h2 className="mt-3 sm:mt-3 font-sans text-2xl sm:text-3xl font-bold text-foreground">
                     {result.score} / {result.total} correct
                   </h2>
-                  <p className="text-muted text-base sm:text-lg mt-1 sm:mt-1.5">{result.percentage}% score</p>
+                  <p className="text-muted text-base sm:text-base mt-1 sm:mt-1">{result.percentage}% score</p>
 
-                  <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6 mt-4 sm:mt-7 text-sm sm:text-base text-muted">
-                    <span className="inline-flex items-center gap-1.5">
-                      <ClockIcon className="w-4 h-4 sm:w-5 sm:h-5" />
-                      {formatTime(result.timeTakenSeconds)}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ type: "spring", stiffness: 200, damping: 14, delay: 0.25 }}
+                    className="inline-flex items-center gap-3 sm:gap-3 mt-4 sm:mt-4 rounded-2xl bg-linear-to-br from-primary-light to-primary px-6 sm:px-6 py-3.5 sm:py-3 shadow-lg shadow-primary-light/30"
+                  >
+                    <span className="text-3xl sm:text-3xl font-extrabold text-white tracking-tight">
+                      {result.level.code}
                     </span>
-                    <span className="inline-flex items-center gap-1.5">
-                      Level attempted:{" "}
-                      <strong className="text-foreground">{result.level.code}</strong>
+                    <span className="h-8 sm:h-8 w-px bg-white/30" />
+                    <span className="text-left">
+                      <span className="block text-[10px] sm:text-[10px] font-bold uppercase tracking-[0.2em] text-white/70">
+                        Your Level
+                      </span>
+                      <span className="block text-sm sm:text-sm font-bold text-white">
+                        {result.level.name}
+                      </span>
                     </span>
+                  </motion.div>
+
+                  <div className="flex items-center justify-center gap-1.5 mt-3 sm:mt-3 text-sm sm:text-sm text-muted">
+                    <ClockIcon className="w-4 h-4 sm:w-4 sm:h-4" />
+                    {formatTime(result.timeTakenSeconds)}
                   </div>
 
                   {result.level.description && (
-                    <p className="text-sm sm:text-base text-muted mt-3 sm:mt-5 max-w-lg mx-auto">
+                    <p className="text-sm sm:text-sm text-muted mt-3 sm:mt-3 max-w-lg mx-auto line-clamp-2 sm:line-clamp-none">
                       {result.level.description}
                     </p>
                   )}
 
-                  <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-3.5 mt-6 sm:mt-9">
+                  <div className="flex flex-wrap items-center justify-center gap-2.5 sm:gap-2.5 mt-5 sm:mt-5">
                     <button
                       onClick={retrySameLevel}
                       className="inline-flex items-center gap-1.5 rounded-md border border-foreground/20 text-muted hover:text-foreground px-4 sm:px-5 py-2 sm:py-3 text-xs sm:text-sm font-semibold uppercase tracking-wide transition"
                     >
-                      Retry this level
+                      Retry test
                     </button>
                     <button
                       onClick={backToLevels}
                       className="inline-flex items-center gap-1.5 rounded-md bg-primary-light hover:opacity-90 text-white font-bold uppercase tracking-wide px-5 sm:px-6 py-2 sm:py-3 text-xs sm:text-sm transition"
                     >
-                      Try another level
+                      Back to Start
                       <ArrowRightIcon className="w-4 h-4" />
                     </button>
                     <ShareResultButton
@@ -470,7 +506,7 @@ export default function TestRunner({
 
                   <button
                     onClick={openCertificateFlow}
-                    className="mt-5 sm:mt-7 inline-flex items-center gap-2 rounded-md bg-primary-light hover:opacity-90 active:scale-95 text-white font-bold uppercase tracking-wide px-5 sm:px-7 py-2.5 sm:py-3.5 text-sm sm:text-base shadow-lg shadow-primary-light/30 transition"
+                    className="mt-5 sm:mt-5 inline-flex items-center gap-2 rounded-md bg-primary-light hover:opacity-90 active:scale-95 text-white font-bold uppercase tracking-wide px-5 sm:px-7 py-2.5 sm:py-2.5 text-sm sm:text-base shadow-lg shadow-primary-light/30 transition"
                   >
                     <AwardIcon className="w-4 h-4 sm:w-5 sm:h-5" />
                     Get Certificate
