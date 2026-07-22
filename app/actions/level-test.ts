@@ -24,23 +24,6 @@ export async function getAllTestQuestions(testId: string): Promise<PublicQuestio
   }));
 }
 
-// Returns the correct option id per question so the quiz can be autofilled.
-export async function getAnswerKey(
-  testId: string
-): Promise<Record<string, string> | null> {
-  const questions = await prisma.question.findMany({
-    where: { testId },
-    include: { options: true },
-  });
-
-  const key: Record<string, string> = {};
-  for (const q of questions) {
-    const correct = q.options.find((o) => o.isCorrect);
-    if (correct) key[q.id] = correct.id;
-  }
-  return key;
-}
-
 const SubmitSchema = z.object({
   testId: z.string().min(1),
   timeTakenSeconds: z.number().int().min(0),

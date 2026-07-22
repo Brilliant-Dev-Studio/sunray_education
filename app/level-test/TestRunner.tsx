@@ -6,7 +6,6 @@ import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   getAllTestQuestions,
-  getAnswerKey,
   submitLevelTestAttempt,
   type PublicQuestion,
   type SubmitLevelTestResult,
@@ -101,13 +100,6 @@ export default function TestRunner({
   function selectAnswer(optionId: string) {
     if (!currentQuestion) return;
     setAnswers((prev) => ({ ...prev, [currentQuestion.id]: optionId }));
-  }
-
-  async function autofillCorrectAnswers() {
-    const key = await getAnswerKey(test.id);
-    if (!key) return;
-    setAnswers(key);
-    setCurrentIndex(questions.length - 1);
   }
 
   function goNext() {
@@ -255,13 +247,6 @@ export default function TestRunner({
                 Question {currentIndex + 1} / {questions.length}
               </div>
               <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={autofillCorrectAnswers}
-                  className="rounded-full border border-dashed border-primary-light/50 text-primary-light px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide hover:bg-primary-light/10 transition"
-                >
-                  Autofill
-                </button>
                 <div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-foreground bg-foreground/5 rounded-full px-2.5 sm:px-3.5 py-1 sm:py-1.5">
                   <ClockIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   {formatTime(elapsed)}
