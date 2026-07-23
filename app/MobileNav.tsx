@@ -12,6 +12,7 @@ const links = [
   { label: "Programs", href: "/programs" },
   { label: "Teachers", href: "/teachers" },
   { label: "Test Level", href: "/level-test" },
+  { label: "Verify Certificate", href: "/verify-certificate" },
 ];
 
 export default function MobileNav() {

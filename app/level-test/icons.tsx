@@ -174,6 +174,39 @@ export function TelegramIcon({ className = base }: IconProps) {
   );
 }
 
+export function CameraIcon({ className = base }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
+      <path
+        d="M4 8.5a2 2 0 0 1 2-2h1.2l.9-1.6A1.5 1.5 0 0 1 9.4 4h5.2a1.5 1.5 0 0 1 1.3.9l.9 1.6H18a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8.5Z"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <circle cx="12" cy="12.5" r="3.5" />
+    </svg>
+  );
+}
+
+export function QrIcon({ className = base }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
+      <rect x="3.5" y="3.5" width="6" height="6" rx="1" />
+      <rect x="14.5" y="3.5" width="6" height="6" rx="1" />
+      <rect x="3.5" y="14.5" width="6" height="6" rx="1" />
+      <path d="M14.5 14.5h2.5v2.5M14.5 20.5h2.5M20.5 14.5v2.5M20.5 20.5h-1" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+export function ShieldCheckIcon({ className = base }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
+      <path d="M12 3.5 5 6v5.5c0 4.5 3 7.7 7 9 4-1.3 7-4.5 7-9V6l-7-2.5Z" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M9 12.2l2.1 2.1L15.5 10" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function LinkIcon({ className = base }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>

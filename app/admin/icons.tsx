@@ -11,6 +11,17 @@ export function HomeIcon({ className = base }: IconProps) {
   );
 }
 
+export function QrIcon({ className = base }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
+      <rect x="3.5" y="3.5" width="6" height="6" rx="1" />
+      <rect x="14.5" y="3.5" width="6" height="6" rx="1" />
+      <rect x="3.5" y="14.5" width="6" height="6" rx="1" />
+      <path d="M14.5 14.5h2.5v2.5M14.5 20.5h2.5M20.5 14.5v2.5M20.5 20.5h-1" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function CreditCardIcon({ className = base }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>

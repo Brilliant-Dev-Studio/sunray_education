@@ -80,6 +80,11 @@ export default function Header() {
               label="Test Level"
               isActive={pathname.startsWith("/level-test")}
             />
+            <NavLink
+              href="/verify-certificate"
+              label="Verify Certificate"
+              isActive={pathname.startsWith("/verify-certificate")}
+            />
           </nav>
           <AccountMenu />
         </div>

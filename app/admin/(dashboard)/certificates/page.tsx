@@ -4,7 +4,7 @@ import { prisma } from "@/app/lib/prisma";
 import { approveCertificateRequest, rejectCertificateRequest } from "@/app/admin/actions/certificates";
 import { getInvoiceImageUrl } from "@/app/lib/s3";
 import { CheckCircleIcon, XCircleIcon } from "@/app/level-test/icons";
-import { EyeIcon } from "@/app/admin/icons";
+import { EyeIcon, QrIcon } from "@/app/admin/icons";
 import AdminPagination from "@/app/admin/AdminPagination";
 
 const STATUS_STYLES: Record<string, string> = {
@@ -169,6 +169,17 @@ export default async function AdminCertificatesPage({
                             className="inline-flex items-center justify-center w-8 h-8 rounded-lg border border-gray-200 text-gray-500 hover:border-[#ef3444] hover:text-[#ef3444] transition"
                           >
                             <EyeIcon className="w-4 h-4" />
+                          </Link>
+                          <Link
+                            href={`/admin/qr-codes/${req.id}`}
+                            title={req.verificationCode ? "QR generated" : "Generate verification QR"}
+                            className={`inline-flex items-center justify-center w-8 h-8 rounded-lg border transition ${
+                              req.verificationCode
+                                ? "border-green-200 text-green-600 hover:bg-green-50"
+                                : "border-gray-200 text-gray-400 hover:border-[#ef3444] hover:text-[#ef3444]"
+                            }`}
+                          >
+                            <QrIcon className="w-4 h-4" />
                           </Link>
                           {req.status === "PENDING" && (
                             <>

@@ -86,12 +86,15 @@ model CertificateRequest {
   price         Int                @default(0) // MMK price snapshot at time of request
   invoiceImage  String // base64 data URI of the uploaded payment invoice
   status        CertificateStatus  @default(PENDING)
+  verificationCode String?         @unique // set once admin generates the verify QR
+  issuedAt      DateTime?
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt
 
   @@index([userId])
   @@index([testId])
   @@index([status])
+  @@index([verificationCode])
 }
 
 // CEFR band for a test: score range -> level (A1..C2 by default)
