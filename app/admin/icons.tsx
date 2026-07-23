@@ -22,6 +22,17 @@ export function QrIcon({ className = base }: IconProps) {
   );
 }
 
+export function IdCardIcon({ className = base }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
+      <rect x="2.5" y="5" width="19" height="14" rx="2" />
+      <circle cx="8" cy="11" r="2" />
+      <path d="M5 16c.5-1.8 2-2.5 3-2.5s2.5.7 3 2.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M14 9.5h4M14 13h4" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function CreditCardIcon({ className = base }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>

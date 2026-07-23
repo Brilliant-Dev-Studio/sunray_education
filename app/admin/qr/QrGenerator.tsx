@@ -19,11 +19,15 @@ const DOT_TYPES: { value: DotType; label: string }[] = [
 export default function QrGenerator({
   verifyUrl,
   code,
-  studentName,
+  title,
+  subtitle,
+  fileNamePrefix = "verify",
 }: {
   verifyUrl: string;
   code: string;
-  studentName: string;
+  title: string;
+  subtitle?: string;
+  fileNamePrefix?: string;
 }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const qrRef = useRef<QRCodeStylingType | null>(null);
@@ -96,16 +100,29 @@ export default function QrGenerator({
       doc.setFillColor(bgColor);
       doc.rect(0, 0, 90, 110, "F");
       doc.addImage(dataUrl, "PNG", 15, 12, 60, 60);
+
+      let y = 82;
       doc.setFontSize(11);
       doc.setTextColor(26, 32, 37);
-      doc.text(studentName, 45, 82, { align: "center" });
+      doc.text(title, 45, y, { align: "center" });
+      y += 6;
+
+      if (subtitle) {
+        doc.setFontSize(8);
+        doc.setTextColor(107, 111, 117);
+        doc.text(subtitle, 45, y, { align: "center" });
+        y += 6;
+      }
+
       doc.setFontSize(9);
       doc.setTextColor(107, 111, 117);
-      doc.text(code, 45, 89, { align: "center" });
-      doc.setFontSize(7);
-      doc.text("Scan to verify at sunraymyanmar.com", 45, 97, { align: "center" });
+      doc.text(code, 45, y, { align: "center" });
+      y += 8;
 
-      doc.save(`certificate-${code}.pdf`);
+      doc.setFontSize(7);
+      doc.text("Scan to verify at sunraymyanmar.com", 45, y, { align: "center" });
+
+      doc.save(`${fileNamePrefix}-${code}.pdf`);
     } finally {
       setGenerating(false);
     }

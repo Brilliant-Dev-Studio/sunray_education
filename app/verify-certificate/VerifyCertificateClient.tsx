@@ -201,16 +201,28 @@ export default function VerifyCertificateClient({
                   Authentic
                 </p>
                 <h2 className="mt-1.5 text-2xl sm:text-3xl font-bold text-foreground">
-                  Certificate Verified
+                  {result.kind === "certificate" ? "Certificate Verified" : "Authenticity Verified"}
                 </h2>
 
                 <div className="mt-7 text-left rounded-2xl border border-foreground/10 bg-background shadow-lg overflow-hidden">
                   <div className="h-1.5 bg-linear-to-r from-primary-light via-[#c9962b] to-primary-light" />
                   <div className="p-6 space-y-3.5">
-                    <Row label="Name" value={result.studentName} />
-                    <Row label="Test" value={result.testName} />
-                    <Row label="Level" value={`${result.levelCode} · ${result.levelName}`} />
-                    <Row label="Score" value={`${result.percentage}%`} />
+                    {result.kind === "certificate" ? (
+                      <>
+                        <Row label="Name" value={result.studentName} />
+                        <Row label="Test" value={result.testName} />
+                        <Row label="Level" value={`${result.levelCode} · ${result.levelName}`} />
+                        <Row label="Score" value={`${result.percentage}%`} />
+                      </>
+                    ) : (
+                      <>
+                        <Row label="Name" value={result.studentName} />
+                        <Row label="Roll No." value={result.rollNumber} />
+                        <Row label="National ID" value={result.nationalId} />
+                        <Row label="Course" value={result.courseTitle} />
+                        <Row label="Batch" value={result.batch} />
+                      </>
+                    )}
                     <Row
                       label="Issued"
                       value={new Intl.DateTimeFormat("en-US", { dateStyle: "medium" }).format(
@@ -231,13 +243,14 @@ export default function VerifyCertificateClient({
                   <XCircleIcon className="w-10 h-10" />
                 </motion.div>
                 <p className="mt-4 text-xs font-bold uppercase tracking-[0.3em] text-primary-light">
-                  Not Recognized
+                  Verification Failed
                 </p>
                 <h2 className="mt-1.5 text-2xl sm:text-3xl font-bold text-foreground">
-                  Not a Valid Certificate
+                  Not Recognized
                 </h2>
                 <p className="mt-2.5 text-sm text-muted max-w-xs mx-auto">
-                  This code doesn&apos;t match any issued Sunray Myanmar certificate.
+                  This code doesn&apos;t match any issued Sunray Myanmar certificate or
+                  authenticity record.
                 </p>
               </>
             )}
@@ -267,7 +280,7 @@ export default function VerifyCertificateClient({
                 Scan or upload the QR code
               </h1>
               <p className="mt-2.5 text-sm sm:text-base text-muted">
-                Found on the back of a Sunray Myanmar certificate
+                Found on a Sunray Myanmar certificate or student ID card
               </p>
             </div>
 

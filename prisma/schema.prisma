@@ -97,6 +97,23 @@ model CertificateRequest {
   @@index([verificationCode])
 }
 
+// Standalone enrollment record used to prove a student is legitimately
+// attending a Sunray Myanmar course (independent of any test/certificate).
+model Enrollment {
+  id               String    @id @default(cuid())
+  studentName      String
+  rollNumber       String
+  nationalId       String
+  courseTitle      String
+  batch            String
+  verificationCode String?   @unique
+  issuedAt         DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([verificationCode])
+}
+
 // CEFR band for a test: score range -> level (A1..C2 by default)
 model Level {
   id          String     @id @default(cuid())
