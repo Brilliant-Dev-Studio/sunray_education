@@ -15,6 +15,8 @@ import {
   ShieldCheckIcon,
   ArrowLeftIcon,
 } from "@/app/level-test/icons";
+import Confetti from "@/app/level-test/Confetti";
+import { decodeQrFromImageElement } from "./decodeQr";
 
 type Mode = "picker" | "camera";
 
@@ -96,7 +98,6 @@ export default function VerifyCertificateClient({
 
   async function handleFile(file: File) {
     setScanError(null);
-    const { default: jsQR } = await import("jsqr");
 
     const dataUrl: string = await new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -107,21 +108,15 @@ export default function VerifyCertificateClient({
 
     const img = new window.Image();
     img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-      ctx.drawImage(img, 0, 0);
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imageData.data, imageData.width, imageData.height, {
-        inversionAttempts: "attemptBoth",
-      });
-      if (code?.data) {
-        runVerify(code.data);
+      const data = decodeQrFromImageElement(img);
+      if (data) {
+        runVerify(data);
       } else {
         setScanError("No QR code found in that image. Try another photo.");
       }
+    };
+    img.onerror = () => {
+      setScanError("Could not read that file. Try another photo.");
     };
     img.src = dataUrl;
   }
@@ -147,8 +142,9 @@ export default function VerifyCertificateClient({
       const tick = () => {
         if (!streamRef.current) return;
         if (video.readyState === video.HAVE_ENOUGH_DATA && ctx) {
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
+          const scale = Math.min(1, 900 / Math.max(video.videoWidth, video.videoHeight));
+          canvas.width = Math.round(video.videoWidth * scale);
+          canvas.height = Math.round(video.videoHeight * scale);
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
           const code = jsQR(imageData.data, imageData.width, imageData.height, {
@@ -183,6 +179,11 @@ export default function VerifyCertificateClient({
 
   return (
     <div className="max-w-lg mx-auto py-10 sm:py-14">
+      {result?.valid && (
+        <div className="fixed inset-0 z-10 pointer-events-none">
+          <Confetti />
+        </div>
+      )}
       <AnimatePresence mode="wait">
         {result ? (
           <motion.div
