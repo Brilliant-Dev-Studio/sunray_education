@@ -114,7 +114,9 @@ export default function VerifyCertificateClient({
       if (!ctx) return;
       ctx.drawImage(img, 0, 0);
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const code = jsQR(imageData.data, imageData.width, imageData.height);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: "attemptBoth",
+      });
       if (code?.data) {
         runVerify(code.data);
       } else {
@@ -149,7 +151,9 @@ export default function VerifyCertificateClient({
           canvas.height = video.videoHeight;
           ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
           const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-          const code = jsQR(imageData.data, imageData.width, imageData.height);
+          const code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "attemptBoth",
+          });
           if (code?.data) {
             stopCamera();
             setMode("picker");

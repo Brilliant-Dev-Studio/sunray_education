@@ -51,8 +51,9 @@ export default function QrGenerator({
         height: 400,
         data: verifyUrl,
         margin: 12,
+        qrOptions: { errorCorrectionLevel: "H" },
         image: showLogo ? "/letterLogo.png" : undefined,
-        imageOptions: { crossOrigin: "anonymous", margin: 8, imageSize: 0.35 },
+        imageOptions: { crossOrigin: "anonymous", margin: 8, imageSize: 0.28, hideBackgroundDots: true },
         dotsOptions: { color: fgColor, type: dotType },
         backgroundOptions: { color: bgColor },
         cornersSquareOptions: { color: fgColor, type: "extra-rounded" },
@@ -71,8 +72,9 @@ export default function QrGenerator({
 
   useEffect(() => {
     qrRef.current?.update({
+      qrOptions: { errorCorrectionLevel: "H" },
       image: showLogo ? "/letterLogo.png" : undefined,
-      imageOptions: { crossOrigin: "anonymous", margin: 8, imageSize: 0.35 },
+      imageOptions: { crossOrigin: "anonymous", margin: 8, imageSize: 0.28, hideBackgroundDots: true },
       dotsOptions: { color: fgColor, type: dotType },
       backgroundOptions: { color: bgColor },
       cornersSquareOptions: { color: fgColor, type: "extra-rounded" },
