@@ -56,3 +56,30 @@ export async function getInvoiceImageUrl(key: string): Promise<string> {
     expiresIn: 3600,
   });
 }
+
+/** Uploads a raw image buffer to S3 under the given folder and returns the object key. */
+export async function uploadImageBuffer(
+  buffer: Buffer,
+  mime: string,
+  folder: string
+): Promise<string> {
+  const key = `${folder}/${Date.now()}-${crypto.randomUUID()}.${extensionFromMime(mime)}`;
+
+  await getClient().send(
+    new PutObjectCommand({
+      Bucket: getBucket(),
+      Key: key,
+      Body: buffer,
+      ContentType: mime,
+    })
+  );
+
+  return key;
+}
+
+/** Generates a short-lived signed URL to view any private S3 image. */
+export async function getImageUrl(key: string): Promise<string> {
+  return getSignedUrl(getClient(), new GetObjectCommand({ Bucket: getBucket(), Key: key }), {
+    expiresIn: 3600,
+  });
+}

@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/app/lib/prisma";
+import { getImageUrl } from "@/app/lib/s3";
 
 export type VerifyCertificateResult =
   | { valid: false }
@@ -22,6 +23,14 @@ export type VerifyCertificateResult =
       nationalId: string;
       courseTitle: string;
       batch: string;
+      issuedAt: string; // ISO date
+    }
+  | {
+      valid: true;
+      kind: "volunteer";
+      teacherName: string;
+      courseTaught: string;
+      photoUrl: string;
       issuedAt: string; // ISO date
     };
 
@@ -75,6 +84,19 @@ export async function verifyCertificateCode(rawInput: string): Promise<VerifyCer
       courseTitle: enrollment.courseTitle,
       batch: enrollment.batch,
       issuedAt: enrollment.issuedAt.toISOString(),
+    };
+  }
+
+  const teacher = await prisma.volunteerTeacher.findUnique({ where: { verificationCode: code } });
+
+  if (teacher && teacher.issuedAt) {
+    return {
+      valid: true,
+      kind: "volunteer",
+      teacherName: teacher.teacherName,
+      courseTaught: teacher.courseTaught,
+      photoUrl: await getImageUrl(teacher.photo),
+      issuedAt: teacher.issuedAt.toISOString(),
     };
   }
 

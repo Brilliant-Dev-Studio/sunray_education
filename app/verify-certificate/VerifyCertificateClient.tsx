@@ -20,7 +20,13 @@ import { decodeQrFromImageElement } from "./decodeQr";
 
 type Mode = "picker" | "camera";
 
-function SecuritySeal({ tone = "gold" }: { tone?: "gold" | "red" }) {
+function SecuritySeal({
+  tone = "gold",
+  photoUrl,
+}: {
+  tone?: "gold" | "red";
+  photoUrl?: string;
+}) {
   const reduceMotion = useReducedMotion();
   const ring = tone === "gold" ? "#c9962b" : "#ef3444";
 
@@ -34,14 +40,21 @@ function SecuritySeal({ tone = "gold" }: { tone?: "gold" | "red" }) {
         }}
       />
       <div className="relative inline-flex items-center justify-center w-[82%] h-[82%] rounded-full bg-linear-to-br from-primary-light to-primary text-white overflow-hidden shadow-inner">
-        <Image
-          src="/laurel.png"
-          alt=""
-          width={140}
-          height={121}
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-auto opacity-40"
-        />
-        <ShieldCheckIcon className="relative w-9 h-9 sm:w-10 sm:h-10" />
+        {photoUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={photoUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />
+        ) : (
+          <>
+            <Image
+              src="/laurel.png"
+              alt=""
+              width={140}
+              height={121}
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[85%] h-auto opacity-40"
+            />
+            <ShieldCheckIcon className="relative w-9 h-9 sm:w-10 sm:h-10" />
+          </>
+        )}
         {!reduceMotion && (
           <motion.span
             className="absolute inset-0"
@@ -201,12 +214,19 @@ export default function VerifyCertificateClient({
 
             {result.valid ? (
               <>
-                <SecuritySeal tone="gold" />
+                <SecuritySeal
+                  tone="gold"
+                  photoUrl={result.kind === "volunteer" ? result.photoUrl : undefined}
+                />
                 <p className="mt-4 text-xs font-bold uppercase tracking-[0.3em] text-emerald-600">
                   Authentic
                 </p>
                 <h2 className="mt-1.5 text-2xl sm:text-3xl font-bold text-foreground">
-                  {result.kind === "certificate" ? "Certificate Verified" : "Authenticity Verified"}
+                  {result.kind === "certificate"
+                    ? "Certificate Verified"
+                    : result.kind === "volunteer"
+                      ? "Volunteer Teacher Verified"
+                      : "Authenticity Verified"}
                 </h2>
 
                 <div className="mt-7 text-left rounded-2xl border border-foreground/10 bg-background shadow-lg overflow-hidden">
@@ -219,13 +239,18 @@ export default function VerifyCertificateClient({
                         <Row label="Level" value={`${result.levelCode} · ${result.levelName}`} />
                         <Row label="Score" value={`${result.percentage}%`} />
                       </>
-                    ) : (
+                    ) : result.kind === "enrollment" ? (
                       <>
                         <Row label="Name" value={result.studentName} />
                         <Row label="Roll No." value={result.rollNumber} />
                         <Row label="National ID" value={result.nationalId} />
                         <Row label="Course" value={result.courseTitle} />
                         <Row label="Batch" value={result.batch} />
+                      </>
+                    ) : (
+                      <>
+                        <Row label="Name" value={result.teacherName} />
+                        <Row label="Course Taught" value={result.courseTaught} />
                       </>
                     )}
                     <Row

@@ -114,6 +114,20 @@ model Enrollment {
   @@index([verificationCode])
 }
 
+// Volunteer teacher record, verified via QR on their volunteer certificate.
+model VolunteerTeacher {
+  id               String    @id @default(cuid())
+  teacherName      String
+  courseTaught     String
+  photo            String // S3 object key
+  verificationCode String?   @unique
+  issuedAt         DateTime?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([verificationCode])
+}
+
 // CEFR band for a test: score range -> level (A1..C2 by default)
 model Level {
   id          String     @id @default(cuid())

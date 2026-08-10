@@ -33,6 +33,16 @@ export function IdCardIcon({ className = base }: IconProps) {
   );
 }
 
+export function ChalkboardIcon({ className = base }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
+      <rect x="3" y="3.5" width="18" height="12" rx="1.5" />
+      <path d="M8 8h5M8 11h8" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M12 15.5V19M8 19h8" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
 export function CreditCardIcon({ className = base }: IconProps) {
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={1.8} className={className}>
