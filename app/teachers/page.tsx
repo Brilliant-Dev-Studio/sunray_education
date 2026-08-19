@@ -39,6 +39,26 @@ const teachers = [
     role: "Lecturer",
     photo: "/Teachers/khaing.jpg",
   },
+  {
+    name: "U Win Thant",
+    role: "Lecturer",
+    photo: "/Teachers/new_teacher_1.jpg",
+  },
+  {
+    name: "U Paing Khant Thaw",
+    role: "Lecturer",
+    photo: "/Teachers/new_teacher_2.jpg",
+  },
+  {
+    name: "Daw Yunn Myat Thwe",
+    role: "Lecturer",
+    photo: "/Teachers/new_teacher_3.jpg",
+  },
+  {
+    name: "Daw Myathazin Htun",
+    role: "Lecturer",
+    photo: "/Teachers/new_teacher_4.jpg",
+  },
 ];
 
 export default function TeachersPage() {
