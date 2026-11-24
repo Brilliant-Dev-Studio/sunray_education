@@ -13,6 +13,7 @@ export type VerifyCertificateResult =
       levelCode: string;
       levelName: string;
       percentage: number;
+      remark: string | null;
       issuedAt: string; // ISO date
     }
   | {
@@ -63,11 +64,12 @@ export async function verifyCertificateCode(rawInput: string): Promise<VerifyCer
     return {
       valid: true,
       kind: "certificate",
-      studentName: certificate.user.name,
+      studentName: certificate.fullName ?? certificate.user.name,
       testName: certificate.test.name,
       levelCode: certificate.levelCode,
       levelName: certificate.levelName,
       percentage: certificate.percentage,
+      remark: certificate.remark,
       issuedAt: certificate.issuedAt.toISOString(),
     };
   }

@@ -31,6 +31,8 @@ export default async function AdminCertificatesPage({
       ? {
           OR: [
             { contactEmail: { contains: q, mode: "insensitive" } },
+            { fullName: { contains: q, mode: "insensitive" } },
+            { phone: { contains: q } },
             { levelCode: { contains: q, mode: "insensitive" } },
             { user: { name: { contains: q, mode: "insensitive" } } },
             { user: { email: { contains: q, mode: "insensitive" } } },
@@ -139,8 +141,11 @@ export default async function AdminCertificatesPage({
                         </a>
                       </td>
                       <td className="px-5 py-3">
-                        <p className="font-semibold text-[#1a2025] whitespace-nowrap">{req.user.name}</p>
+                        <p className="font-semibold text-[#1a2025] whitespace-nowrap">
+                          {req.fullName ?? req.user.name}
+                        </p>
                         <p className="text-xs text-gray-500">{req.user.email}</p>
+                        {req.phone && <p className="text-xs text-gray-500">{req.phone}</p>}
                       </td>
                       <td className="px-5 py-3">
                         <p className="text-[#1a2025] font-medium truncate max-w-40">{req.test.name}</p>

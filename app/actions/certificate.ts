@@ -15,6 +15,15 @@ const SubmitCertificateSchema = z.object({
   score: z.number().int().min(0),
   total: z.number().int().min(1),
   percentage: z.number().int().min(0).max(100),
+  fullName: z
+    .string()
+    .trim()
+    .min(2, { error: "Enter your full name." })
+    .max(120, { error: "Name is too long." }),
+  phone: z
+    .string()
+    .trim()
+    .regex(/^\+?[0-9\s-]{6,20}$/, { error: "Enter a valid phone number." }),
   contactEmail: z.email({ error: "Enter a valid email address." }),
   paymentMethod: z.enum(["UAB_PAY", "KBZ_PAY", "WAVE_MONEY"]),
   invoiceImage: z
@@ -78,6 +87,8 @@ export async function submitCertificateRequest(
       score: data.score,
       total: data.total,
       percentage: data.percentage,
+      fullName: data.fullName,
+      phone: data.phone,
       contactEmail: data.contactEmail,
       paymentMethod: data.paymentMethod,
       price: settings.certificatePrice,
@@ -89,6 +100,8 @@ export async function submitCertificateRequest(
     requestId: request.id,
     userName: user.name,
     userEmail: user.email,
+    fullName: data.fullName,
+    phone: data.phone,
     contactEmail: data.contactEmail,
     testName: test.name,
     levelCode: data.levelCode,

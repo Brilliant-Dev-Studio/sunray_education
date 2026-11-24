@@ -37,6 +37,8 @@ export default function CertificateRequestPanel({
   onBack: () => void;
 }) {
   const [step, setStep] = useState<Step>("form");
+  const [fullName, setFullName] = useState("");
+  const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [method, setMethod] = useState<PaymentMethod | "">("");
   const [preview, setPreview] = useState<string | null>(null);
@@ -88,6 +90,14 @@ export default function CertificateRequestPanel({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
 
+    if (!fullName.trim()) {
+      setError("Enter your full name.");
+      return;
+    }
+    if (!phone.trim()) {
+      setError("Enter your phone number.");
+      return;
+    }
     if (!email) {
       setError("Enter your email address.");
       return;
@@ -111,6 +121,8 @@ export default function CertificateRequestPanel({
       score,
       total,
       percentage,
+      fullName,
+      phone,
       contactEmail: email,
       paymentMethod: method,
       invoiceImage: invoiceData,
@@ -181,6 +193,40 @@ export default function CertificateRequestPanel({
       </div>
 
       <form onSubmit={handleSubmit} className="mt-4 sm:mt-6 space-y-3 sm:space-y-4">
+        <div>
+          <label htmlFor="cert-name" className="block text-sm font-medium text-foreground mb-1.5">
+            Full Name
+          </label>
+          <input
+            id="cert-name"
+            type="text"
+            autoComplete="name"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
+            required
+            maxLength={120}
+            placeholder="Your real name (as on the certificate)"
+            className="w-full rounded-lg border border-foreground/15 bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted outline-none focus:border-primary-light focus:ring-1 focus:ring-primary-light transition"
+          />
+        </div>
+
+        <div>
+          <label htmlFor="cert-phone" className="block text-sm font-medium text-foreground mb-1.5">
+            Phone Number
+          </label>
+          <input
+            id="cert-phone"
+            type="tel"
+            autoComplete="tel"
+            inputMode="tel"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+            placeholder="09xxxxxxxxx"
+            className="w-full rounded-lg border border-foreground/15 bg-background px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted outline-none focus:border-primary-light focus:ring-1 focus:ring-primary-light transition"
+          />
+        </div>
+
         <div>
           <label htmlFor="cert-email" className="block text-sm font-medium text-foreground mb-1.5">
             Email

@@ -73,7 +73,20 @@ export default async function CertificateRequestDetailPage({
             Requester
           </h2>
           <div className="space-y-4">
-            <Field label="Name" value={req.user.name} />
+            <Field label="Full Name" value={req.fullName ?? "—"} />
+            <Field
+              label="Phone"
+              value={
+                req.phone ? (
+                  <a href={`tel:${req.phone}`} className="hover:text-[#ef3444] underline">
+                    {req.phone}
+                  </a>
+                ) : (
+                  "—"
+                )
+              }
+            />
+            <Field label="Account Name" value={req.user.name} />
             <Field label="Account Email" value={req.user.email} />
             <Field label="Contact Email" value={req.contactEmail} />
             <Field

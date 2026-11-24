@@ -238,6 +238,7 @@ export default function VerifyCertificateClient({
                         <Row label="Test" value={result.testName} />
                         <Row label="Level" value={`${result.levelCode} · ${result.levelName}`} />
                         <Row label="Score" value={`${result.percentage}%`} />
+                        {result.remark && <Row label="Remark" value={result.remark} />}
                       </>
                     ) : result.kind === "enrollment" ? (
                       <>

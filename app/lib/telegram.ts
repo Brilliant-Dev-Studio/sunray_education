@@ -8,6 +8,8 @@ type NotifyCertificateRequestInput = {
   requestId: string;
   userName: string;
   userEmail: string;
+  fullName: string;
+  phone: string;
   contactEmail: string;
   testName: string;
   levelCode: string;
@@ -36,7 +38,9 @@ export async function notifyTelegramNewCertificateRequest(
   const caption = [
     "🎓 New Certificate Request",
     "",
-    `Name: ${input.userName}`,
+    `Full Name: ${input.fullName}`,
+    `Phone: ${input.phone}`,
+    `Account Name: ${input.userName}`,
     `Account Email: ${input.userEmail}`,
     `Contact Email: ${input.contactEmail}`,
     `Test: ${input.testName}`,

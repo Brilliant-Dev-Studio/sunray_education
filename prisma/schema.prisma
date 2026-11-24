@@ -82,11 +82,14 @@ model CertificateRequest {
   total         Int
   percentage    Int
   contactEmail  String
+  fullName      String? // real name as it should appear on the certificate
+  phone         String? // contact phone number
   paymentMethod PaymentMethod
   price         Int                @default(0) // MMK price snapshot at time of request
   invoiceImage  String // base64 data URI of the uploaded payment invoice
   status        CertificateStatus  @default(PENDING)
   verificationCode String?         @unique // set once admin generates the verify QR
+  remark        String? // admin remark, shown on the public verify page
   issuedAt      DateTime?
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt

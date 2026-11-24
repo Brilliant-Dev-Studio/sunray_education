@@ -37,9 +37,17 @@ export default async function AdminUsersPage({
 
   return (
     <div className="p-8 max-w-6xl mx-auto">
-      <header className="mb-6">
-        <h1 className="text-2xl font-semibold text-[#1a2025]">Users</h1>
-        <p className="text-gray-500 mt-1">Everyone who has signed up to take level tests</p>
+      <header className="mb-6 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold text-[#1a2025]">Users</h1>
+          <p className="text-gray-500 mt-1">Everyone who has signed up to take level tests</p>
+        </div>
+        <a
+          href={`/admin/users/export${q ? `?q=${encodeURIComponent(q)}` : ""}`}
+          className="rounded-lg border border-gray-200 text-gray-700 hover:border-[#ef3444] hover:text-[#ef3444] font-semibold px-4 py-2 text-sm transition"
+        >
+          Export CSV{q ? " (filtered)" : ""}
+        </a>
       </header>
 
       <form method="GET" className="flex flex-wrap items-center gap-3 mb-6">
