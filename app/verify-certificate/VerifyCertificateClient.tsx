@@ -247,6 +247,7 @@ export default function VerifyCertificateClient({
                         <Row label="National ID" value={result.nationalId} />
                         <Row label="Course" value={result.courseTitle} />
                         <Row label="Batch" value={result.batch} />
+                        {result.remark && <Row label="Remark" value={result.remark} />}
                       </>
                     ) : (
                       <>

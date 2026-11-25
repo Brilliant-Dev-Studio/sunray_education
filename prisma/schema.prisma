@@ -109,6 +109,7 @@ model Enrollment {
   nationalId       String
   courseTitle      String
   batch            String
+  remark           String? // admin remark, shown on the public verify page
   verificationCode String?   @unique
   issuedAt         DateTime?
   createdAt        DateTime  @default(now())

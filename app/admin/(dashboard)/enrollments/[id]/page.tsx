@@ -2,7 +2,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { headers } from "next/headers";
 import { prisma } from "@/app/lib/prisma";
-import { generateEnrollmentCode } from "@/app/admin/actions/enrollments";
+import {
+  generateEnrollmentCode,
+  updateEnrollmentRemark,
+} from "@/app/admin/actions/enrollments";
 import { ArrowLeftIcon } from "@/app/level-test/icons";
 import QrGenerator from "@/app/admin/qr/QrGenerator";
 
@@ -17,6 +20,7 @@ export default async function AdminEnrollmentQrPage({
   if (!enrollment) notFound();
 
   const generateCodeWithId = generateEnrollmentCode.bind(null, enrollment.id);
+  const updateRemarkWithId = updateEnrollmentRemark.bind(null, enrollment.id);
 
   const hdrs = await headers();
   const host = hdrs.get("host");
@@ -77,6 +81,31 @@ export default async function AdminEnrollmentQrPage({
             </form>
           </div>
         )}
+
+        <form
+          action={updateRemarkWithId}
+          className="mt-10 pt-8 border-t border-gray-100 space-y-3 max-w-xl"
+        >
+          <label htmlFor="remark" className="block text-sm font-medium text-gray-700">
+            Remark{" "}
+            <span className="text-gray-400 font-normal">(optional · shown on verify page)</span>
+          </label>
+          <textarea
+            id="remark"
+            name="remark"
+            rows={3}
+            maxLength={500}
+            defaultValue={enrollment.remark ?? ""}
+            placeholder="e.g. Scholarship student"
+            className="w-full rounded-lg border border-gray-200 px-3.5 py-2.5 text-sm outline-none focus:border-[#ef3444] focus:ring-1 focus:ring-[#ef3444] transition"
+          />
+          <button
+            type="submit"
+            className="rounded-lg border border-gray-200 text-gray-700 hover:border-[#ef3444] hover:text-[#ef3444] font-semibold px-5 py-2 text-sm transition"
+          >
+            Save Remark
+          </button>
+        </form>
       </div>
     </div>
   );

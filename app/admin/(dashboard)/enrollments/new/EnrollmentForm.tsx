@@ -126,6 +126,24 @@ export default function EnrollmentForm() {
         <Field {...fieldProps("batch")} />
       </div>
 
+      <div>
+        <label htmlFor="remark" className="block text-sm font-medium text-gray-700 mb-1.5">
+          Remark{" "}
+          <span className="text-gray-400 font-normal">(optional · shown on verify page)</span>
+        </label>
+        <textarea
+          id="remark"
+          name="remark"
+          rows={3}
+          maxLength={500}
+          placeholder="e.g. Scholarship student"
+          className="w-full rounded-lg border border-gray-300 px-3.5 py-2.5 text-sm outline-none focus:border-[#ef3444] focus:ring-1 focus:ring-[#ef3444] transition"
+        />
+        {state?.fieldErrors?.remark && (
+          <p className="mt-1.5 text-xs text-[#ef3444]">{state.fieldErrors.remark}</p>
+        )}
+      </div>
+
       {state?.error && (
         <p className="text-sm text-[#ef3444] bg-red-50 border border-red-200 rounded-lg px-3.5 py-2.5">
           {state.error}

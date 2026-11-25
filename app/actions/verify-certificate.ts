@@ -24,6 +24,7 @@ export type VerifyCertificateResult =
       nationalId: string;
       courseTitle: string;
       batch: string;
+      remark: string | null;
       issuedAt: string; // ISO date
     }
   | {
@@ -85,6 +86,7 @@ export async function verifyCertificateCode(rawInput: string): Promise<VerifyCer
       nationalId: enrollment.nationalId,
       courseTitle: enrollment.courseTitle,
       batch: enrollment.batch,
+      remark: enrollment.remark,
       issuedAt: enrollment.issuedAt.toISOString(),
     };
   }

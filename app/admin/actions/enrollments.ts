@@ -25,7 +25,27 @@ const EnrollmentSchema = z.object({
     .trim()
     .min(2, { error: "Course title must be at least 2 characters." }),
   batch: z.string().trim().min(1, { error: "Batch is required." }),
+  remark: z
+    .string()
+    .trim()
+    .max(500, { error: "Remark must be 500 characters or fewer." })
+    .transform((v) => v || null),
 });
+
+function readRemark(formData: FormData): string | null {
+  const raw = formData.get("remark");
+  if (typeof raw !== "string") return null;
+  return raw.trim().slice(0, 500) || null;
+}
+
+export async function updateEnrollmentRemark(enrollmentId: string, formData: FormData) {
+  await verifyAdminSession();
+  await prisma.enrollment.update({
+    where: { id: enrollmentId },
+    data: { remark: readRemark(formData) },
+  });
+  revalidatePath(`/admin/enrollments/${enrollmentId}`);
+}
 
 export type CreateEnrollmentState =
   | { fieldErrors?: Record<string, string>; error?: string }
@@ -43,6 +63,7 @@ export async function createEnrollment(
     nationalId: formData.get("nationalId"),
     courseTitle: formData.get("courseTitle"),
     batch: formData.get("batch"),
+    remark: formData.get("remark") ?? "",
   });
 
   if (!validated.success) {
